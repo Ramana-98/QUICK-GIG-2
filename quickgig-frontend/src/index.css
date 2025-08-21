@@ -55,5 +55,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #3b82f6 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
