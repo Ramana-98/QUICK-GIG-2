@@ -35,7 +35,7 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-transparent">
       {/* Mobile header */}
       <div className="lg:hidden">
         <div className="flex items-center justify-between p-4 border-b">
@@ -54,10 +54,10 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
       <div className="lg:flex">
         {/* Sidebar */}
         <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
-          <div className="flex flex-col flex-grow pt-5 bg-card border-r overflow-y-auto">
+          <div className="flex flex-col flex-grow pt-5 bg-transparent backdrop-blur-sm border-r border-white/20 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <Briefcase className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-primary">QuickGig</span>
+              <Briefcase className="h-8 w-8 text-white" />
+              <span className="ml-2 text-xl font-bold text-white">QuickGig</span>
             </div>
             
             <div className="mt-8 flex-grow flex flex-col">
