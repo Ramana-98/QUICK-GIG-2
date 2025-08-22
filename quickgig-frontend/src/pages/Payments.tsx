@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { User } from '../types'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { AnimatedCounter } from '../components/ui/animated-counter'
 import { 
   DollarSign, 
   TrendingUp, 
@@ -112,12 +113,16 @@ export default function Payments({ user }: PaymentsProps) {
               <CardTitle className="text-sm font-medium">
                 {user.role === 'seeker' ? 'Total Earned' : 'Total Spent'}
               </CardTitle>
-              <Wallet className="h-4 w-4 text-muted-foreground" />
+              <Wallet className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                ${user.role === 'seeker' ? totalEarnings : totalSpent}
-              </div>
+              <AnimatedCounter 
+                value={user.role === 'seeker' ? totalEarnings : totalSpent}
+                className="text-2xl font-bold"
+                delay={0.1}
+                duration={1.8}
+                prefix="$"
+              />
               <p className="text-xs text-muted-foreground">
                 +12% from last month
               </p>
@@ -133,10 +138,16 @@ export default function Payments({ user }: PaymentsProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${pendingPayments}</div>
+              <AnimatedCounter 
+                value={pendingPayments}
+                className="text-2xl font-bold"
+                delay={0.2}
+                duration={1.5}
+                prefix="$"
+              />
               <p className="text-xs text-muted-foreground">
                 2 payments pending
               </p>
@@ -152,10 +163,16 @@ export default function Payments({ user }: PaymentsProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">This Month</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$680</div>
+              <AnimatedCounter 
+                value={680}
+                className="text-2xl font-bold"
+                delay={0.3}
+                duration={2}
+                prefix="$"
+              />
               <p className="text-xs text-muted-foreground">
                 +8% from last month
               </p>
@@ -171,10 +188,16 @@ export default function Payments({ user }: PaymentsProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <DollarSign className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$245</div>
+              <AnimatedCounter 
+                value={245}
+                className="text-2xl font-bold"
+                delay={0.4}
+                duration={1.6}
+                prefix="$"
+              />
               <p className="text-xs text-muted-foreground">
                 Ready to withdraw
               </p>

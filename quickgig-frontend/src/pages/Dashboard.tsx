@@ -3,6 +3,10 @@ import { motion } from 'framer-motion'
 import { User, Gig } from '../types'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { AnimatedCounter } from '../components/ui/animated-counter'
+import FilterPanel, { FilterState } from '../components/FilterPanel'
+import PostGigModal from '../components/PostGigModal'
+import { useToast } from '../hooks/use-toast'
 import { 
   MapPin, 
   Clock, 
@@ -75,18 +79,89 @@ export default function Dashboard({ user }: DashboardProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [activeTab, setActiveTab] = useState('all')
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
+  const [filters, setFilters] = useState<FilterState>({
+    category: 'all',
+    paymentType: 'all',
+    budgetMin: 0,
+    budgetMax: 1000,
+    duration: 'all',
+    location: 'all',
+    minRating: 0
+  })
+  const [appliedFilters, setAppliedFilters] = useState<FilterState>(filters)
+  const [isPostGigModalOpen, setIsPostGigModalOpen] = useState(false)
+  const { toast } = useToast()
 
   const categories = ['all', 'Pet Care', 'Shopping', 'Photography', 'Cleaning', 'Delivery', 'Tutoring']
   const tabs = user.role === 'seeker' 
     ? ['all', 'applied', 'completed'] 
     : ['all', 'active', 'completed']
 
+  // Check if any filters are active
+  const hasActiveFilters = () => {
+    return appliedFilters.category !== 'all' ||
+           appliedFilters.paymentType !== 'all' ||
+           appliedFilters.budgetMin > 0 ||
+           appliedFilters.budgetMax < 1000 ||
+           appliedFilters.duration !== 'all' ||
+           appliedFilters.location !== 'all' ||
+           appliedFilters.minRating > 0
+  }
+
   const filteredGigs = gigs.filter(gig => {
+    // Search filter
     const matchesSearch = gig.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          gig.description.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    // Category filter (from dropdown)
     const matchesCategory = selectedCategory === 'all' || gig.category === selectedCategory
-    return matchesSearch && matchesCategory
+    
+    // Advanced filters
+    const matchesAdvancedCategory = appliedFilters.category === 'all' || gig.category === appliedFilters.category
+    const matchesPaymentType = appliedFilters.paymentType === 'all' || gig.payType === appliedFilters.paymentType
+    const matchesBudget = gig.pay >= appliedFilters.budgetMin && gig.pay <= appliedFilters.budgetMax
+    
+    // Duration matching (simplified)
+    const matchesDuration = appliedFilters.duration === 'all' || 
+      (appliedFilters.duration === '1-2 hours' && gig.duration.includes('1 hour')) ||
+      (appliedFilters.duration === '2-4 hours' && (gig.duration.includes('2-3 hours') || gig.duration.includes('2 hours'))) ||
+      (appliedFilters.duration === '4-8 hours' && gig.duration.includes('4 hours')) ||
+      (appliedFilters.duration === '8+ hours' && gig.duration.includes('8'))
+    
+    const matchesLocation = appliedFilters.location === 'all' || gig.location === appliedFilters.location
+    const matchesRating = appliedFilters.minRating === 0 || (gig.posterRating && gig.posterRating >= appliedFilters.minRating)
+    
+    return matchesSearch && matchesCategory && matchesAdvancedCategory && 
+           matchesPaymentType && matchesBudget && matchesDuration && 
+           matchesLocation && matchesRating
   })
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters)
+  }
+
+  const handleClearFilters = () => {
+    const clearedFilters: FilterState = {
+      category: 'all',
+      paymentType: 'all',
+      budgetMin: 0,
+      budgetMax: 1000,
+      duration: 'all',
+      location: 'all',
+      minRating: 0
+    }
+    setFilters(clearedFilters)
+    setAppliedFilters(clearedFilters)
+  }
+
+  const handlePostGigSuccess = () => {
+    toast({
+      variant: "success",
+      title: "Gig Posted Successfully! 🎉",
+      description: "Your gig has been posted and is now visible to job seekers.",
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -103,12 +178,13 @@ export default function Dashboard({ user }: DashboardProps) {
           </p>
         </div>
         
-        {user.role === 'poster' && (
-          <Button className="mt-4 sm:mt-0">
-            <Plus className="w-4 h-4 mr-2" />
-            Post New Gig
-          </Button>
-        )}
+        <Button 
+          className="mt-4 sm:mt-0 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+          onClick={() => setIsPostGigModalOpen(true)}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          {user.role === 'poster' ? 'Post New Gig' : 'Post a Gig'}
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -123,10 +199,15 @@ export default function Dashboard({ user }: DashboardProps) {
               <CardTitle className="text-sm font-medium">
                 {user.role === 'seeker' ? 'Available Gigs' : 'Active Gigs'}
               </CardTitle>
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <Briefcase className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{gigs.length}</div>
+              <AnimatedCounter 
+                value={gigs.length} 
+                className="text-2xl font-bold"
+                delay={0.1}
+                duration={1.5}
+              />
               <p className="text-xs text-muted-foreground">
                 +2 from last week
               </p>
@@ -142,10 +223,16 @@ export default function Dashboard({ user }: DashboardProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Rating</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
+              <Star className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user.rating}</div>
+              <AnimatedCounter 
+                value={user.rating} 
+                className="text-2xl font-bold"
+                delay={0.2}
+                duration={1.8}
+                decimals={1}
+              />
               <p className="text-xs text-muted-foreground">
                 Based on {user.completedGigs} gigs
               </p>
@@ -163,10 +250,16 @@ export default function Dashboard({ user }: DashboardProps) {
               <CardTitle className="text-sm font-medium">
                 {user.role === 'seeker' ? 'Earnings' : 'Total Spent'}
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <DollarSign className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$1,234</div>
+              <AnimatedCounter 
+                value={1234} 
+                className="text-2xl font-bold"
+                delay={0.3}
+                duration={2}
+                prefix="$"
+              />
               <p className="text-xs text-muted-foreground">
                 +15% from last month
               </p>
@@ -205,8 +298,17 @@ export default function Dashboard({ user }: DashboardProps) {
                 ))}
               </select>
               
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => setIsFilterPanelOpen(true)}
+                className={`transition-colors ${
+                  hasActiveFilters() 
+                    ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
+                    : ''
+                }`}
+              >
+                <Filter className={`h-4 w-4 ${hasActiveFilters() ? 'animate-pulse' : ''}`} />
               </Button>
             </div>
           </div>
@@ -310,6 +412,23 @@ export default function Dashboard({ user }: DashboardProps) {
           </p>
         </div>
       )}
+
+      {/* Filter Panel */}
+      <FilterPanel
+        isOpen={isFilterPanelOpen}
+        onClose={() => setIsFilterPanelOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+      />
+
+      {/* Post Gig Modal */}
+      <PostGigModal
+        isOpen={isPostGigModalOpen}
+        onClose={() => setIsPostGigModalOpen(false)}
+        onSuccess={handlePostGigSuccess}
+      />
     </div>
   )
 }

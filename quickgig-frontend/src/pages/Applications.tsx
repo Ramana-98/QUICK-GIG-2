@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { User, Application } from '../types'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Card, CardContent } from '../components/ui/card'
+import { Badge } from '../components/ui/badge'
+import ApplicationsFilterSheet from '../components/ApplicationsFilterSheet'
+import ApplicationViewModal from '../components/ApplicationViewModal'
+import ApplicationChatModal from '../components/ApplicationChatModal'
 import { 
   Clock, 
   CheckCircle, 
@@ -10,23 +14,44 @@ import {
   Eye,
   MessageCircle,
   Star,
-  Filter
+  Filter,
+  MoreVertical,
+  Search
 } from 'lucide-react'
 
 interface ApplicationsProps {
   user: User
 }
 
+interface FilterState {
+  status: string
+  dateSort: string
+  payMin: number
+  payMax: number
+  posterRating: number
+}
+
 // Mock data
-const mockApplications: (Application & { gigTitle: string; gigPay: number })[] = [
+const mockApplications: (Application & { 
+  gigTitle: string; 
+  gigPay: number; 
+  gigDescription?: string; 
+  gigLocation?: string; 
+  posterName: string; 
+  posterRating?: number 
+})[] = [
   {
     id: '1',
     gigId: '1',
     gigTitle: 'Dog Walking Service',
     gigPay: 15,
+    gigDescription: 'Need someone to walk my friendly golden retriever Max twice a day.',
+    gigLocation: 'Downtown Park Area',
     seekerId: 'seeker1',
     seekerName: 'John Doe',
     seekerRating: 4.7,
+    posterName: 'Sarah Johnson',
+    posterRating: 4.8,
     status: 'pending',
     appliedAt: '2024-01-20',
     message: 'I have experience with dogs and would love to help with Max!'
@@ -36,9 +61,13 @@ const mockApplications: (Application & { gigTitle: string; gigPay: number })[] =
     gigId: '2',
     gigTitle: 'Grocery Shopping Assistant',
     gigPay: 25,
+    gigDescription: 'Weekly grocery shopping for elderly couple. List will be provided.',
+    gigLocation: 'Westfield Shopping Center',
     seekerId: 'seeker2',
     seekerName: 'Emma Wilson',
     seekerRating: 4.9,
+    posterName: 'Robert Smith',
+    posterRating: 4.6,
     status: 'accepted',
     appliedAt: '2024-01-19',
     message: 'I can help with your grocery shopping needs.'
@@ -48,9 +77,13 @@ const mockApplications: (Application & { gigTitle: string; gigPay: number })[] =
     gigId: '3',
     gigTitle: 'Event Photography',
     gigPay: 150,
+    gigDescription: 'Birthday party photography for 3-hour event. Equipment provided.',
+    gigLocation: 'Community Center Hall',
     seekerId: 'seeker3',
     seekerName: 'Alex Chen',
     seekerRating: 4.5,
+    posterName: 'Maria Garcia',
+    posterRating: 4.9,
     status: 'completed',
     appliedAt: '2024-01-18',
     message: 'Professional photographer with 5+ years experience.'
@@ -60,7 +93,125 @@ const mockApplications: (Application & { gigTitle: string; gigPay: number })[] =
 export default function Applications({ user }: ApplicationsProps) {
   const [applications, setApplications] = useState(mockApplications)
   const [activeTab, setActiveTab] = useState('all')
-  const [selectedApplication, setSelectedApplication] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
+  const [selectedApplication, setSelectedApplication] = useState<typeof mockApplications[0] | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false)
+  const [filters, setFilters] = useState<FilterState>({
+    status: 'all',
+    dateSort: 'newest',
+    payMin: 0,
+    payMax: 1000,
+    posterRating: 0
+  })
+  const [appliedFilters, setAppliedFilters] = useState<FilterState>(filters)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  // Close dropdown when scrolling
+  useEffect(() => {
+    function handleScroll() {
+      setOpenDropdown(null)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // Check if any filters are active
+  const hasActiveFilters = () => {
+    return appliedFilters.status !== 'all' ||
+           appliedFilters.payMin > 0 ||
+           appliedFilters.payMax < 1000 ||
+           appliedFilters.posterRating > 0
+  }
+
+  // Filter and sort applications
+  const filteredApplications = applications.filter(app => {
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      if (!app.gigTitle.toLowerCase().includes(searchLower) &&
+          !app.posterName.toLowerCase().includes(searchLower)) {
+        return false
+      }
+    }
+
+    // Status filter
+    if (appliedFilters.status !== 'all' && app.status !== appliedFilters.status) {
+      return false
+    }
+
+    // Pay range filter
+    if (app.gigPay < appliedFilters.payMin || app.gigPay > appliedFilters.payMax) {
+      return false
+    }
+
+    // Poster rating filter
+    if (appliedFilters.posterRating > 0 && (app.posterRating || 0) < appliedFilters.posterRating) {
+      return false
+    }
+
+    return true
+  }).sort((a, b) => {
+    // Date sorting
+    if (appliedFilters.dateSort === 'newest') {
+      return new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime()
+    } else {
+      return new Date(a.appliedAt).getTime() - new Date(b.appliedAt).getTime()
+    }
+  })
+
+  // Filter by active tab
+  const tabFilteredApplications = filteredApplications.filter(app => {
+    if (activeTab === 'all') return true
+    return app.status === activeTab
+  })
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters)
+  }
+
+  const handleClearFilters = () => {
+    const clearedFilters: FilterState = {
+      status: 'all',
+      dateSort: 'newest',
+      payMin: 0,
+      payMax: 1000,
+      posterRating: 0
+    }
+    setFilters(clearedFilters)
+    setAppliedFilters(clearedFilters)
+  }
+
+  const handleViewApplication = (application: typeof mockApplications[0]) => {
+    setSelectedApplication(application)
+    setIsViewModalOpen(true)
+    setOpenDropdown(null)
+  }
+
+  const handleChatWithEmployer = (application: typeof mockApplications[0]) => {
+    setSelectedApplication(application)
+    setIsChatModalOpen(true)
+    setOpenDropdown(null)
+  }
 
   const tabs = user.role === 'seeker' 
     ? [
@@ -75,10 +226,6 @@ export default function Applications({ user }: ApplicationsProps) {
         { id: 'accepted', label: 'Accepted', count: applications.filter(a => a.status === 'accepted').length },
         { id: 'rejected', label: 'Rejected', count: applications.filter(a => a.status === 'rejected').length }
       ]
-
-  const filteredApplications = activeTab === 'all' 
-    ? applications 
-    : applications.filter(app => app.status === activeTab)
 
   const handleStatusChange = (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     setApplications(prev => 
@@ -134,8 +281,16 @@ export default function Applications({ user }: ApplicationsProps) {
           </p>
         </div>
         
-        <Button variant="outline">
-          <Filter className="h-4 w-4 mr-2" />
+        <Button 
+          variant="outline"
+          onClick={() => setIsFilterSheetOpen(true)}
+          className={`transition-colors ${
+            hasActiveFilters() 
+              ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
+              : ''
+          }`}
+        >
+          <Filter className={`h-4 w-4 mr-2 ${hasActiveFilters() ? 'animate-pulse' : ''}`} />
           Filter
         </Button>
       </div>
@@ -171,7 +326,7 @@ export default function Applications({ user }: ApplicationsProps) {
 
       {/* Applications List */}
       <div className="space-y-4">
-        {filteredApplications.length === 0 ? (
+        {tabFilteredApplications.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
               <div className="text-muted-foreground">
@@ -189,7 +344,7 @@ export default function Applications({ user }: ApplicationsProps) {
             </CardContent>
           </Card>
         ) : (
-          filteredApplications.map((application, index) => (
+          tabFilteredApplications.map((application, index) => (
             <motion.div
               key={application.id}
               initial={{ opacity: 0, y: 20 }}
@@ -210,11 +365,46 @@ export default function Applications({ user }: ApplicationsProps) {
                         
                         {/* Content */}
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold">{application.gigTitle}</h3>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
-                              {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                            </span>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{application.gigTitle}</h3>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
+                                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                              </span>
+                            </div>
+                            {/* Three dot menu for mobile */}
+                            <div className="sm:hidden relative ml-3" ref={dropdownRef}>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0"
+                                onClick={() => setOpenDropdown(openDropdown === application.id ? null : application.id)}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                              
+                              {/* Dropdown Menu */}
+                              {openDropdown === application.id && (
+                                <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 min-w-[120px]">
+                                  <div className="py-1">
+                                    <button 
+                                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                      onClick={() => handleViewApplication(application)}
+                                    >
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View
+                                    </button>
+                                    <button 
+                                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                      onClick={() => handleChatWithEmployer(application)}
+                                    >
+                                      <MessageCircle className="h-4 w-4 mr-2" />
+                                      Chat
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                           
                           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
@@ -238,14 +428,22 @@ export default function Applications({ user }: ApplicationsProps) {
                       </div>
                     </div>
                     
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 ml-4">
-                      <Button variant="outline" size="sm">
+                    {/* Actions - Desktop only */}
+                    <div className="hidden sm:flex items-center gap-2 ml-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleViewApplication(application)}
+                      >
                         <Eye className="h-4 w-4 mr-1" />
                         View
                       </Button>
                       
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleChatWithEmployer(application)}
+                      >
                         <MessageCircle className="h-4 w-4 mr-1" />
                         Chat
                       </Button>
@@ -276,6 +474,34 @@ export default function Applications({ user }: ApplicationsProps) {
           ))
         )}
       </div>
+
+      {/* Filter Sheet */}
+      <ApplicationsFilterSheet
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+      />
+
+      {/* View Modal */}
+      {selectedApplication && (
+        <ApplicationViewModal
+          isOpen={isViewModalOpen}
+          onClose={() => setIsViewModalOpen(false)}
+          application={selectedApplication}
+        />
+      )}
+
+      {/* Chat Modal */}
+      {selectedApplication && (
+        <ApplicationChatModal
+          isOpen={isChatModalOpen}
+          onClose={() => setIsChatModalOpen(false)}
+          application={selectedApplication}
+        />
+      )}
     </div>
   )
 }

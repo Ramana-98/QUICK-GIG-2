@@ -9,6 +9,7 @@ import Applications from './pages/Applications'
 import Payments from './pages/Payments'
 import Profile from './pages/Profile'
 import Layout from './components/Layout'
+import { Toaster } from './components/ui/toaster'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -59,6 +60,7 @@ function App() {
             </Routes>
           </Layout>
         )}
+        <Toaster />
       </div>
     </Router>
   )
