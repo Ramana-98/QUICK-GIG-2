@@ -170,19 +170,19 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                   <div className={`ml-3 flex-1 min-w-0 transition-opacity duration-300 ${
                     isExpanded ? 'opacity-100' : 'opacity-0'
                   } ${isExpanded ? 'block' : 'hidden'}`}>
-                    <p className="text-sm font-medium truncate text-white">{user.name}</p>
-                    <p className="text-xs text-white/60 capitalize">{user.role}</p>
+                    <p className="text-sm font-medium truncate text-black">{user.name}</p>
+                    <p className="text-xs text-black/70 capitalize">{user.role}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={onLogout}
-                    className={`text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 ${
+                    className={`text-black hover:text-black/80 hover:bg-black/10 transition-all duration-200 flex items-center justify-center ${
                       isExpanded ? 'ml-2' : 'ml-0'
                     } ${isExpanded ? 'opacity-100' : 'opacity-0'} ${isExpanded ? 'block' : 'hidden'}`}
                     title={!isExpanded ? 'Logout' : undefined}
                   >
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-4 w-4 mx-auto" />
                   </Button>
                 </div>
               </div>
