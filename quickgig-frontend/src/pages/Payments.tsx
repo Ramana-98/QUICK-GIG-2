@@ -4,6 +4,7 @@ import { User } from '../types'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { AnimatedCounter } from '../components/ui/animated-counter'
+import ExportDropdown from '../components/ExportDropdown'
 import { 
   DollarSign, 
   TrendingUp, 
@@ -90,10 +91,10 @@ export default function Payments({ user }: PaymentsProps) {
         </div>
         
         <div className="flex gap-2 mt-4 sm:mt-0">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
+          <ExportDropdown 
+            data={transactions}
+            filename="payments-report"
+          />
           <Button>
             <CreditCard className="h-4 w-4 mr-2" />
             Add Payment Method
@@ -242,10 +243,6 @@ export default function Payments({ user }: PaymentsProps) {
               <Button variant="outline" className="w-full justify-start">
                 <CreditCard className="h-4 w-4 mr-2" />
                 Payment Methods
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                <Download className="h-4 w-4 mr-2" />
-                Download Statement
               </Button>
             </CardContent>
           </Card>
