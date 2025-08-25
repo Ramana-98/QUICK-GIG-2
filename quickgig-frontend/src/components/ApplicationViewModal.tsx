@@ -66,7 +66,7 @@ export default function ApplicationViewModal({
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-green-600" />
               <div>
-                <p className="font-medium">${application.gigPay}</p>
+                <p className="font-medium">₹{application.gigPay}</p>
                 <p className="text-xs text-muted-foreground">Pay Rate</p>
               </div>
             </div>

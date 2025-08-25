@@ -415,7 +415,7 @@ export default function Applications({ user }: ApplicationsProps) {
                                 {application.seekerRating}
                               </div>
                             )}
-                            <span>${application.gigPay}</span>
+                            <span>₹{application.gigPay}</span>
                             <span>Applied {new Date(application.appliedAt).toLocaleDateString()}</span>
                           </div>
                           

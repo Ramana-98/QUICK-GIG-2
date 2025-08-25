@@ -136,7 +136,7 @@ export default function FilterPanel({
                   <label className="text-sm font-medium">Budget Range</label>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-muted-foreground">Min ($)</label>
+                      <label className="text-xs text-muted-foreground">Min (₹)</label>
                       <input
                         type="number"
                         value={localFilters.budgetMin}
@@ -147,7 +147,7 @@ export default function FilterPanel({
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-muted-foreground">Max ($)</label>
+                      <label className="text-xs text-muted-foreground">Max (₹)</label>
                       <input
                         type="number"
                         value={localFilters.budgetMax}
@@ -159,7 +159,7 @@ export default function FilterPanel({
                     </div>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    ${localFilters.budgetMin} - ${localFilters.budgetMax}
+                    ₹{localFilters.budgetMin} - ₹{localFilters.budgetMax}
                   </div>
                 </div>
 

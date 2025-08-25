@@ -126,7 +126,7 @@ export default function GigDetails({ user }: GigDetailsProps) {
                 <div className="flex items-center gap-3">
                   <DollarSign className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="font-medium">${gig.pay} {gig.payType === 'hourly' ? 'per hour' : 'fixed'}</p>
+                    <p className="font-medium">₹{gig.pay} {gig.payType === 'hourly' ? 'per hour' : 'fixed'}</p>
                     <p className="text-sm text-muted-foreground">Payment</p>
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function GigDetails({ user }: GigDetailsProps) {
                   <div className="space-y-4">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">
-                        ${gig.pay}{gig.payType === 'hourly' ? '/hr' : ''}
+                        ₹{gig.pay}{gig.payType === 'hourly' ? '/hr' : ''}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {gig.payType === 'hourly' ? 'Hourly Rate' : 'Fixed Price'}

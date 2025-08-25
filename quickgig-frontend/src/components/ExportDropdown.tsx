@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, FileText, FileSpreadsheet, File, Loader2 } from 'lucide-react'
 import { Button } from './ui/button'
@@ -14,6 +15,9 @@ export default function ExportDropdown({ data = [], filename = 'export' }: Expor
   const [isOpen, setIsOpen] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const [exportingFormat, setExportingFormat] = useState<string | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; placement: 'top' | 'bottom' }>({ top: 0, left: 0, placement: 'bottom' })
   const { toast } = useToast()
 
   const exportFormats = [
@@ -76,9 +80,60 @@ export default function ExportDropdown({ data = [], filename = 'export' }: Expor
     setExportingFormat(null)
   }
 
+  const computePosition = () => {
+    if (!buttonRef.current) return
+    const rect = buttonRef.current.getBoundingClientRect()
+    const gap = 8
+    const spaceBelow = window.innerHeight - rect.bottom
+    const preferredPlacement: 'top' | 'bottom' = spaceBelow < 220 ? 'top' : 'bottom'
+    let top = preferredPlacement === 'bottom' ? rect.bottom + gap : rect.top - gap
+    // Provisional left aligning to button's right, will be corrected after measuring menu
+    const provisionalLeft = Math.max(8, Math.min(rect.right - 256, window.innerWidth - 8 - 256))
+    setMenuStyle({ top, left: provisionalLeft, placement: preferredPlacement })
+  }
+
+  useLayoutEffect(() => {
+    if (isOpen) {
+      computePosition()
+      // After first paint, if placing on top we need the menu height to subtract
+      requestAnimationFrame(() => {
+        if (menuRef.current && buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect()
+          const gap = 8
+          const menuHeight = menuRef.current.offsetHeight
+          const menuWidth = menuRef.current.offsetWidth
+          const spaceBelow = window.innerHeight - rect.bottom
+          const placement: 'top' | 'bottom' = spaceBelow < menuHeight + 40 ? 'top' : 'bottom'
+          const top = placement === 'bottom' ? rect.bottom + gap : rect.top - menuHeight - gap
+          // Align right edges by default, then clamp into viewport with 8px margin
+          const desiredLeft = rect.right - menuWidth
+          const left = Math.max(8, Math.min(desiredLeft, window.innerWidth - 8 - menuWidth))
+          setMenuStyle({ top, left, placement })
+        }
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const onResizeScroll = () => computePosition()
+    window.addEventListener('resize', onResizeScroll)
+    // capture scroll on any scrollable ancestor
+    window.addEventListener('scroll', onResizeScroll, true)
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('resize', onResizeScroll)
+      window.removeEventListener('scroll', onResizeScroll, true)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [isOpen])
+
   return (
     <div className="relative">
       <Button 
+        ref={buttonRef}
         variant="outline" 
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
@@ -97,37 +152,37 @@ export default function ExportDropdown({ data = [], filename = 'export' }: Expor
         )}
       </Button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-64 sm:w-56 bg-background border rounded-md shadow-lg z-50 p-1"
-            onMouseLeave={() => setIsOpen(false)}
-          >
-            {exportFormats.map((format) => {
-              const Icon = format.icon
-              return (
-                <div
-                  key={format.id}
-                  onClick={() => simulateExport(format.id)}
-                  className="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors cursor-pointer rounded-sm"
-                >
-                  <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm">{format.label}</span>
-                    <span className="text-xs text-muted-foreground">{format.description}</span>
-                  </div>
+      {isOpen && createPortal(
+        <motion.div
+          ref={menuRef}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.12 }}
+          className="fixed z-[1000] w-[min(92vw,16rem)] bg-background border rounded-md shadow-lg p-1 max-h-[60vh] overflow-auto"
+          style={{ top: menuStyle.top, left: menuStyle.left }}
+          onMouseLeave={() => setIsOpen(false)}
+        >
+          {exportFormats.map((format) => {
+            const Icon = format.icon
+            return (
+              <div
+                key={format.id}
+                onClick={() => simulateExport(format.id)}
+                className="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors cursor-pointer rounded-sm"
+              >
+                <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10">
+                  <Icon className="h-4 w-4 text-primary" />
                 </div>
-              )
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm">{format.label}</span>
+                  <span className="text-xs text-muted-foreground">{format.description}</span>
+                </div>
+              </div>
+            )
+          })}
+        </motion.div>,
+        document.body
+      )}
 
       {/* Loading overlay for visual feedback */}
       {isExporting && (

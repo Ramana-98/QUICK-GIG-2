@@ -97,7 +97,7 @@ export default function ApplicationsFilterSheet({
 
           {/* Pay Range */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Pay Range ($)</label>
+            <label className="text-sm font-medium">Pay Range (₹)</label>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Input

@@ -10,7 +10,7 @@ import { useToast } from '../hooks/use-toast'
 import { 
   MapPin, 
   Clock, 
-  DollarSign, 
+  IndianRupee, 
   Star, 
   Filter,
   Search,
@@ -168,10 +168,10 @@ export default function Dashboard({ user }: DashboardProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-poppins font-semibold text-foreground">
             Welcome back, {user.name}!
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 font-sans">
             {user.role === 'seeker' 
               ? 'Find your next gig opportunity' 
               : 'Manage your posted gigs'}
@@ -200,7 +200,7 @@ export default function Dashboard({ user }: DashboardProps) {
                   placeholder="Search gigs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-sans"
                 />
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function Dashboard({ user }: DashboardProps) {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                className="px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-sans"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -242,7 +242,7 @@ export default function Dashboard({ user }: DashboardProps) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
+              className={`py-2 px-1 border-b-2 font-medium text-sm capitalize transition-colors font-sans ${
                 activeTab === tab
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -267,12 +267,12 @@ export default function Dashboard({ user }: DashboardProps) {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg">{gig.title}</CardTitle>
-                    <CardDescription className="mt-1">
+                    <CardTitle className="text-lg font-poppins font-semibold">{gig.title}</CardTitle>
+                    <CardDescription className="mt-1 font-sans">
                       {gig.description}
                     </CardDescription>
                   </div>
-                  <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-sans">
                     {gig.category}
                   </span>
                 </div>
@@ -281,17 +281,17 @@ export default function Dashboard({ user }: DashboardProps) {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <DollarSign className="h-4 w-4 mr-1" />
-                      ${gig.pay} {gig.payType === 'hourly' ? '/hr' : 'fixed'}
+                    <div className="flex items-center text-sm text-muted-foreground font-sans">
+                      <IndianRupee className="h-4 w-4 mr-1" />
+                      <span className="font-poppins font-bold">₹{gig.pay}</span> {gig.payType === 'hourly' ? '/hr' : 'fixed'}
                     </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
+                    <div className="flex items-center text-sm text-muted-foreground font-sans">
                       <Clock className="h-4 w-4 mr-1" />
                       {gig.duration}
                     </div>
                   </div>
                   
-                  <div className="flex items-center text-sm text-muted-foreground">
+                  <div className="flex items-center text-sm text-muted-foreground font-sans">
                     <MapPin className="h-4 w-4 mr-1" />
                     {gig.location}
                   </div>
@@ -303,11 +303,11 @@ export default function Dashboard({ user }: DashboardProps) {
                           {gig.posterName.charAt(0)}
                         </span>
                       </div>
-                      <span className="ml-2 text-sm">{gig.posterName}</span>
+                      <span className="ml-2 text-sm font-sans">{gig.posterName}</span>
                       {gig.posterRating && (
                         <div className="ml-2 flex items-center">
                           <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                          <span className="text-xs ml-1">{gig.posterRating}</span>
+                          <span className="text-xs ml-1 font-sans">{gig.posterRating}</span>
                         </div>
                       )}
                     </div>
@@ -326,8 +326,8 @@ export default function Dashboard({ user }: DashboardProps) {
       {filteredGigs.length === 0 && (
         <div className="text-center py-12">
           <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No gigs found</h3>
-          <p className="text-muted-foreground">
+          <h3 className="text-lg font-poppins font-semibold text-foreground mb-2">No gigs found</h3>
+          <p className="text-muted-foreground font-sans">
             Try adjusting your search criteria or check back later for new opportunities.
           </p>
         </div>
