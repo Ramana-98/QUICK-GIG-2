@@ -351,109 +351,96 @@ export default function Applications({ user }: ApplicationsProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4">
-                        {/* Avatar */}
-                        <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center">
-                          <span className="text-primary-foreground font-medium">
-                            {application.seekerName.charAt(0)}
-                          </span>
+              <Card className="hover:shadow-md transition-shadow w-full">
+                <CardContent className="p-4 sm:p-6">
+                  {/* Mobile-First Layout */}
+                  <div className="space-y-4">
+                    {/* Header: Title + Status */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
+                          {application.gigTitle}
+                        </h3>
+                      </div>
+                      <Badge className={`shrink-0 text-xs font-medium ${getStatusColor(application.status)}`}>
+                        {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                      </Badge>
+                    </div>
+
+                    {/* Author Row */}
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary rounded-full flex items-center justify-center shrink-0">
+                        <span className="text-primary-foreground font-medium text-sm sm:text-base">
+                          {application.seekerName.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm sm:text-base font-medium text-foreground truncate">
+                          by {application.seekerName}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Details Grid - Responsive */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                      {/* Rating */}
+                      {application.seekerRating && (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
+                          <span className="text-sm sm:text-base font-medium">{application.seekerRating}</span>
                         </div>
-                        
-                        {/* Content */}
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-semibold">{application.gigTitle}</h3>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
-                                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                              </span>
-                            </div>
-                            {/* Three dot menu for mobile */}
-                            <div className="sm:hidden relative ml-3" ref={dropdownRef}>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-8 w-8 p-0"
-                                onClick={() => setOpenDropdown(openDropdown === application.id ? null : application.id)}
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                              
-                              {/* Dropdown Menu */}
-                              {openDropdown === application.id && (
-                                <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-20 min-w-[120px]">
-                                  <div className="py-1">
-                                    <button 
-                                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                      onClick={() => handleViewApplication(application)}
-                                    >
-                                      <Eye className="h-4 w-4 mr-2" />
-                                      View
-                                    </button>
-                                    <button 
-                                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                      onClick={() => handleChatWithEmployer(application)}
-                                    >
-                                      <MessageCircle className="h-4 w-4 mr-2" />
-                                      Chat
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                            <span>by {application.seekerName}</span>
-                            {application.seekerRating && (
-                              <div className="flex items-center">
-                                <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
-                                {application.seekerRating}
-                              </div>
-                            )}
-                            <span>₹{application.gigPay}</span>
-                            <span>Applied {new Date(application.appliedAt).toLocaleDateString()}</span>
-                          </div>
-                          
-                          {application.message && (
-                            <p className="text-sm text-foreground bg-muted p-3 rounded-md">
-                              "{application.message}"
-                            </p>
-                          )}
-                        </div>
+                      )}
+                      
+                      {/* Price */}
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm sm:text-base font-bold text-green-600">₹{application.gigPay}</span>
+                      </div>
+                      
+                      {/* Applied Date */}
+                      <div className="flex items-center">
+                        <span className="text-xs sm:text-sm text-muted-foreground">
+                          Applied {new Date(application.appliedAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                     
-                    {/* Actions - Desktop only */}
-                    <div className="hidden sm:flex items-center gap-2 ml-4">
+                    {/* Description Box */}
+                    {application.message && (
+                      <div className="bg-muted/50 p-3 sm:p-4 rounded-lg border">
+                        <p className="text-sm sm:text-base text-foreground leading-relaxed">
+                          "{application.message}"
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleViewApplication(application)}
+                        className="w-full sm:w-auto justify-center sm:justify-start"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
                       </Button>
                       
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleChatWithEmployer(application)}
+                        className="w-full sm:w-auto justify-center sm:justify-start"
                       >
-                        <MessageCircle className="h-4 w-4 mr-1" />
+                        <MessageCircle className="h-4 w-4 mr-2" />
                         Chat
                       </Button>
                       
                       {user.role === 'poster' && application.status === 'pending' && (
-                        <div className="flex gap-1">
+                        <div className="flex gap-2 w-full sm:w-auto">
                           <Button
                             size="sm"
                             onClick={() => handleStatusChange(application.id, 'accepted')}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
                           >
                             Accept
                           </Button>
@@ -461,6 +448,7 @@ export default function Applications({ user }: ApplicationsProps) {
                             size="sm"
                             variant="destructive"
                             onClick={() => handleStatusChange(application.id, 'rejected')}
+                            className="flex-1 sm:flex-none"
                           >
                             Reject
                           </Button>

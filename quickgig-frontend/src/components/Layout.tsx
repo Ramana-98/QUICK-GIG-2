@@ -2,6 +2,9 @@ import { ReactNode, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { User } from '../types'
 import { Button } from './ui/button'
+import MobileNavbar from './MobileNavbar'
+import { NotificationDropdown } from './NotificationDropdown'
+import { SidebarDrawer } from './SidebarDrawer'
 import { 
   Home, 
   Briefcase, 
@@ -23,6 +26,8 @@ interface LayoutProps {
 export default function Layout({ children, user, onLogout }: LayoutProps) {
   const location = useLocation()
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const getIconColor = (itemName: string, isActive: boolean) => {
     const colors = {
@@ -53,12 +58,18 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
         <div className="flex items-center justify-between p-4 border-b">
           <h1 className="text-xl font-bold text-primary">QuickGig</h1>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-            </Button>
+            <NotificationDropdown
+              isOpen={isNotificationOpen}
+              onClose={() => setIsNotificationOpen(false)}
+              onToggle={() => setIsNotificationOpen(!isNotificationOpen)}
+            />
+            <SidebarDrawer
+              isOpen={isSidebarOpen}
+              onClose={() => setIsSidebarOpen(false)}
+              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+              user={user}
+              onLogout={onLogout}
+            />
           </div>
         </div>
       </div>
@@ -204,28 +215,8 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
         </div>
       </div>
 
-      {/* Mobile bottom navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t">
-        <nav className="flex justify-around py-2">
-          {navigation.slice(0, 4).map((item) => {
-            const isActive = location.pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
-                  isActive
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="text-xs mt-1">{item.name}</span>
-              </Link>
-            )
-          })}
-        </nav>
-      </div>
+      {/* Mobile Navigation with Scroll Behavior */}
+      <MobileNavbar user={user} />
     </div>
   )
 }

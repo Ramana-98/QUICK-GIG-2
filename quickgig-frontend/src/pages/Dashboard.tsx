@@ -6,6 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { AnimatedCounter } from '../components/ui/animated-counter'
 import FilterPanel, { FilterState } from '../components/FilterPanel'
 import PostGigModal from '../components/PostGigModal'
+import ApplyModal from '../components/ApplyModal'
+import { ApplyButton, ApplyButtonState } from '../components/ApplyButton'
+import { ViewApplicationModal } from '../components/ViewApplicationModal'
+import { WithdrawConfirmDialog } from '../components/WithdrawConfirmDialog'
+import { AnimatedPostGigButton } from '../components/AnimatedPostGigButton'
 import { useToast } from '../hooks/use-toast'
 import { 
   MapPin, 
@@ -15,11 +20,13 @@ import {
   Filter,
   Search,
   Plus,
-  Briefcase
+  Briefcase,
+  X
 } from 'lucide-react'
 
 interface DashboardProps {
-  user: User
+  user: User | null
+  onLoginRequired?: () => void
 }
 
 // Mock data
@@ -74,12 +81,20 @@ const mockGigs: Gig[] = [
   }
 ]
 
-export default function Dashboard({ user }: DashboardProps) {
+export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
   const [gigs, setGigs] = useState<Gig[]>(mockGigs)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [activeTab, setActiveTab] = useState('all')
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
+  const [isPostGigModalOpen, setIsPostGigModalOpen] = useState(false)
+  const [appliedGigs, setAppliedGigs] = useState<Set<string>>(new Set())
+  const [applyingGigs, setApplyingGigs] = useState<Set<string>>(new Set())
+  const [selectedGig, setSelectedGig] = useState<Gig | null>(null)
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+  const [viewApplicationGig, setViewApplicationGig] = useState<Gig | null>(null)
+  const [withdrawGig, setWithdrawGig] = useState<Gig | null>(null)
+  const [isWithdrawing, setIsWithdrawing] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     category: 'all',
     paymentType: 'all',
@@ -90,11 +105,10 @@ export default function Dashboard({ user }: DashboardProps) {
     minRating: 0
   })
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(filters)
-  const [isPostGigModalOpen, setIsPostGigModalOpen] = useState(false)
   const { toast } = useToast()
 
   const categories = ['all', 'Pet Care', 'Shopping', 'Photography', 'Cleaning', 'Delivery', 'Tutoring']
-  const tabs = user.role === 'seeker' 
+  const tabs = user?.role === 'seeker' 
     ? ['all', 'applied', 'completed'] 
     : ['all', 'active', 'completed']
 
@@ -155,10 +169,108 @@ export default function Dashboard({ user }: DashboardProps) {
     setAppliedFilters(clearedFilters)
   }
 
+  const handleApplyClick = (gig: Gig) => {
+    if (!user) {
+      toast({
+        title: "Please log in to apply for gigs",
+        description: "You need to be logged in to submit applications",
+        variant: "destructive"
+      })
+      onLoginRequired?.()
+      return
+    }
+    
+    if (user.role !== 'seeker') {
+      toast({
+        title: "Only job seekers can apply",
+        description: "Switch to seeker mode to apply for gigs",
+        variant: "destructive"
+      })
+      return
+    }
+    
+    setApplyingGigs(prev => new Set([...prev, gig.id]))
+    setSelectedGig(gig)
+    setIsApplyModalOpen(true)
+  }
+
+  const handleViewApplication = (gig: Gig) => {
+    setViewApplicationGig(gig)
+  }
+
+  const handleWithdrawApplication = (gig: Gig) => {
+    setWithdrawGig(gig)
+  }
+
+  const confirmWithdraw = async () => {
+    if (!withdrawGig) return
+    
+    setIsWithdrawing(true)
+    try {
+      // Mock API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      setAppliedGigs(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(withdrawGig.id)
+        return newSet
+      })
+      
+      toast({
+        title: "Application withdrawn",
+        description: "Your application has been successfully withdrawn.",
+      })
+      
+      setWithdrawGig(null)
+    } catch (error) {
+      toast({
+        title: "Failed to withdraw",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsWithdrawing(false)
+    }
+  }
+
+  const handleApplicationSubmitted = (gigId: string) => {
+    setApplyingGigs(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(gigId)
+      return newSet
+    })
+    setAppliedGigs(prev => new Set([...prev, gigId]))
+    setIsApplyModalOpen(false)
+    setSelectedGig(null)
+    toast({
+      title: "Application submitted!",
+      description: "Your application has been sent to the client.",
+    })
+  }
+
+  const handleApplicationError = (gigId: string) => {
+    setApplyingGigs(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(gigId)
+      return newSet
+    })
+    toast({
+      title: "Application failed",
+      description: "Something went wrong. Please try again.",
+      variant: "destructive"
+    })
+  }
+
+  const getApplyButtonState = (gigId: string): ApplyButtonState => {
+    if (applyingGigs.has(gigId)) return 'applying'
+    if (appliedGigs.has(gigId)) return 'applied'
+    return 'default'
+  }
+
   const handlePostGigSuccess = () => {
     toast({
       variant: "success",
-      title: "Gig Posted Successfully! 🎉",
+      title: "Gig Posted Successfully! ",
       description: "Your gig has been posted and is now visible to job seekers.",
     })
   }
@@ -169,22 +281,23 @@ export default function Dashboard({ user }: DashboardProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-poppins font-semibold text-foreground">
-            Welcome back, {user.name}!
+            Welcome back, {user?.name || 'Guest'}!
           </h1>
           <p className="text-muted-foreground mt-1 font-sans">
-            {user.role === 'seeker' 
+            {user?.role === 'seeker' 
               ? 'Find your next gig opportunity' 
-              : 'Manage your posted gigs'}
+              : user?.role === 'poster'
+              ? 'Manage your posted gigs'
+              : 'Please log in to get started'}
           </p>
         </div>
         
-        <Button 
-          className="mt-4 sm:mt-0 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+        <AnimatedPostGigButton
           onClick={() => setIsPostGigModalOpen(true)}
+          className="mt-4 sm:mt-0"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          {user.role === 'poster' ? 'Post New Gig' : 'Post a Gig'}
-        </Button>
+          {user?.role === 'poster' ? 'Post New Gig' : 'Post a Gig'}
+        </AnimatedPostGigButton>
       </div>
 
 
@@ -312,8 +425,14 @@ export default function Dashboard({ user }: DashboardProps) {
                       )}
                     </div>
                     
-                    {user.role === 'seeker' && (
-                      <Button size="sm">Apply</Button>
+                    {user?.role === 'seeker' && (
+                      <ApplyButton
+                        state={getApplyButtonState(gig.id)}
+                        onClick={() => handleApplyClick(gig)}
+                        onViewApplication={() => handleViewApplication(gig)}
+                        onWithdrawApplication={() => handleWithdrawApplication(gig)}
+                        className="transition-all duration-200"
+                      />
                     )}
                   </div>
                 </div>
@@ -347,7 +466,61 @@ export default function Dashboard({ user }: DashboardProps) {
       <PostGigModal
         isOpen={isPostGigModalOpen}
         onClose={() => setIsPostGigModalOpen(false)}
-        onSuccess={handlePostGigSuccess}
+        onSuccess={() => {
+          toast({
+            title: "Gig posted successfully!",
+            description: "Your gig is now live and visible to job seekers.",
+          })
+        }}
+      />
+
+      {/* Apply Modal */}
+      {selectedGig && user && (
+        <ApplyModal
+          isOpen={isApplyModalOpen}
+          onClose={() => {
+            setIsApplyModalOpen(false)
+            // Reset applying state if modal is closed without submitting
+            if (applyingGigs.has(selectedGig.id)) {
+              setApplyingGigs(prev => {
+                const newSet = new Set(prev)
+                newSet.delete(selectedGig.id)
+                return newSet
+              })
+            }
+          }}
+          gig={selectedGig}
+          user={user}
+          onApplicationSubmitted={handleApplicationSubmitted}
+          onApplicationError={handleApplicationError}
+        />
+      )}
+
+      {/* View Application Modal */}
+      {viewApplicationGig && (
+        <ViewApplicationModal
+          isOpen={!!viewApplicationGig}
+          onClose={() => setViewApplicationGig(null)}
+          application={{
+            id: `app-${viewApplicationGig.id}`,
+            gigTitle: viewApplicationGig.title,
+            clientName: viewApplicationGig.posterName,
+            coverLetter: "This is a mock cover letter for demonstration purposes. In a real application, this would contain the actual cover letter submitted by the user.",
+            expectedPay: viewApplicationGig.pay.toString(),
+            availability: "Weekdays 9 AM - 5 PM",
+            submittedAt: new Date().toISOString(),
+            status: 'pending'
+          }}
+        />
+      )}
+
+      {/* Withdraw Confirmation Dialog */}
+      <WithdrawConfirmDialog
+        isOpen={!!withdrawGig}
+        onClose={() => setWithdrawGig(null)}
+        onConfirm={confirmWithdraw}
+        gigTitle={withdrawGig?.title || ''}
+        isLoading={isWithdrawing}
       />
     </div>
   )
