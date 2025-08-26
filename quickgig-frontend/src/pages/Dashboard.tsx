@@ -415,7 +415,7 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
                 variant="outline" 
                 size="icon"
                 onClick={() => setIsFilterPanelOpen(true)}
-                className={`transition-colors ${
+                className={`filter-glassmorphism transition-all duration-300 ${
                   hasActiveFilters() 
                     ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
                     : ''

@@ -284,7 +284,7 @@ export default function Applications({ user }: ApplicationsProps) {
         <Button 
           variant="outline"
           onClick={() => setIsFilterSheetOpen(true)}
-          className={`transition-colors ${
+          className={`filter-glassmorphism transition-all duration-300 ${
             hasActiveFilters() 
               ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
               : ''

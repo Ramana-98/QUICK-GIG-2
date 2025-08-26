@@ -131,7 +131,7 @@ export default function Settings() {
                     id="name"
                     value={profileData.name}
                     onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                    className="bg-background/50"
+                    className="bg-background/50 shine-border shine-border-gold"
                   />
                 </div>
                 <div className="space-y-2">
@@ -141,7 +141,7 @@ export default function Settings() {
                     type="email"
                     value={profileData.email}
                     onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                    className="bg-background/50"
+                    className="bg-background/50 shine-border shine-border-gold"
                   />
                 </div>
               </div>
@@ -157,7 +157,7 @@ export default function Settings() {
                         type={showPasswords.current ? "text" : "password"}
                         value={profileData.currentPassword}
                         onChange={(e) => setProfileData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                        className="bg-background/50 pr-10"
+                        className="bg-background/50 pr-10 shine-border shine-border-blue"
                       />
                       <Button
                         type="button"
@@ -182,7 +182,7 @@ export default function Settings() {
                         type={showPasswords.new ? "text" : "password"}
                         value={profileData.newPassword}
                         onChange={(e) => setProfileData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        className="bg-background/50 pr-10"
+                        className="bg-background/50 pr-10 shine-border shine-border-blue"
                       />
                       <Button
                         type="button"
@@ -207,7 +207,7 @@ export default function Settings() {
                         type={showPasswords.confirm ? "text" : "password"}
                         value={profileData.confirmPassword}
                         onChange={(e) => setProfileData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        className="bg-background/50 pr-10"
+                        className="bg-background/50 pr-10 shine-border shine-border-blue"
                       />
                       <Button
                         type="button"

@@ -49,7 +49,7 @@ export default function ApplicationsFilterSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px]">
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] bg-background/80 backdrop-blur-md border-border/50">
         <SheetHeader>
           <SheetTitle>Filter Applications</SheetTitle>
           <SheetDescription>

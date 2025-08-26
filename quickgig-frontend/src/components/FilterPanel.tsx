@@ -82,9 +82,9 @@ export default function FilterPanel({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 300 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-96 bg-background border-l shadow-xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-96 bg-background/50 backdrop-blur-md border-l border-border/50 shadow-xl z-50 overflow-y-auto"
           >
-            <Card className="h-full rounded-none border-0">
+            <Card className="h-full rounded-none border-0 bg-transparent">
               <CardHeader className="border-b">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Filter Gigs</CardTitle>

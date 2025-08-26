@@ -63,7 +63,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
           <p className="text-gray-600 mt-2">Your hyperlocal gig platform</p>
         </div>
 
-        <Card>
+        <Card className="w-full max-w-md mx-auto bg-card/50 backdrop-blur-sm border-border/50 shine-border-blue beam-border-blue">
           <CardHeader>
             <CardTitle>{isLogin ? 'Welcome Back' : 'Join QuickGig'}</CardTitle>
             <CardDescription>
@@ -120,7 +120,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary shine-border shine-border-blue"
                         required
                       />
                     </div>
@@ -133,7 +133,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary shine-border shine-border-blue"
                       required
                     />
                   </div>
@@ -145,7 +145,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary shine-border shine-border-blue"
                       required
                     />
                   </div>
@@ -158,7 +158,7 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary shine-border shine-border-blue"
                         required
                       />
                     </div>

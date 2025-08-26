@@ -9,6 +9,7 @@ import Applications from './pages/Applications'
 import Payments from './pages/Payments'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import Help from './pages/Help'
 import Layout from './components/Layout'
 import { Toaster } from './components/ui/toaster'
 
@@ -58,6 +59,7 @@ function App() {
               <Route path="/payments" element={<Payments user={user} />} />
               <Route path="/profile" element={<Profile user={user} onUpdate={setUser} />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/help" element={<Help />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
