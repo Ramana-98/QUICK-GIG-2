@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User } from '../types'
 import { Button } from './ui/button'
+import { getBackgroundBrightness, getAdaptiveColors } from '../lib/utils'
 import { 
   Home, 
   FileText, 
@@ -19,6 +20,7 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
   const location = useLocation()
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [isDarkBackground, setIsDarkBackground] = useState(false)
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -31,6 +33,25 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
   if (user.role === 'poster') {
     navigation.splice(1, 0, { name: 'Post Gig', href: '/post-gig', icon: Plus })
   }
+
+  // Check background brightness
+  useEffect(() => {
+    const checkBackground = () => {
+      const brightness = getBackgroundBrightness()
+      setIsDarkBackground(brightness === 'dark')
+    }
+
+    checkBackground()
+    
+    // Check on resize and scroll
+    window.addEventListener('resize', checkBackground)
+    window.addEventListener('scroll', checkBackground)
+    
+    return () => {
+      window.removeEventListener('resize', checkBackground)
+      window.removeEventListener('scroll', checkBackground)
+    }
+  }, [])
 
   // Scroll direction detection
   useEffect(() => {
@@ -86,6 +107,8 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
     }
   }, [lastScrollY])
 
+  const adaptiveColors = getAdaptiveColors(isDarkBackground)
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -102,7 +125,11 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
           className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
         >
           <div className="mx-4 mb-4">
-            <div className="bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl shadow-lg shadow-black/10">
+            <div className={`${
+              isDarkBackground 
+                ? 'bg-gray-800/95 border-gray-600/50' 
+                : 'bg-white/95 border-gray-200/50'
+            } backdrop-blur-md rounded-2xl shadow-lg shadow-black/10`}>
               <nav className="flex justify-around py-3 px-2">
                 {navigation.slice(0, 5).map((item, index) => {
                   const isActive = location.pathname === item.href
@@ -117,20 +144,28 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
                         to={item.href}
                         className={`flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-200 ${
                           isActive
-                            ? 'text-primary bg-primary/10'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            ? isDarkBackground
+                              ? 'text-teal-300 bg-teal-400/20'
+                              : 'text-teal-700 bg-teal-500/15'
+                            : isDarkBackground
+                              ? 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                              : 'text-white/70 hover:text-white hover:bg-white/10'
                         }`}
                       >
                         <div className="relative">
                           <item.icon className={`h-5 w-5 transition-all duration-200 ${
-                            isActive ? 'text-primary' : ''
+                            isActive 
+                              ? isDarkBackground ? 'text-teal-300' : 'text-teal-700'
+                              : ''
                           }`} />
                           
                           {/* Active indicator */}
                           {isActive && (
                             <motion.div
                               layoutId="activeTab"
-                              className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"
+                              className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${
+                                isDarkBackground ? 'bg-teal-300' : 'bg-teal-700'
+                              }`}
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -139,7 +174,9 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
                         </div>
                         
                         <span className={`text-xs mt-1 font-medium transition-all duration-200 ${
-                          isActive ? 'text-primary' : ''
+                          isActive 
+                            ? isDarkBackground ? 'text-teal-300' : 'text-teal-700'
+                            : ''
                         }`}>
                           {item.name}
                         </span>

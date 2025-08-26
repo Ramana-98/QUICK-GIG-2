@@ -75,138 +75,143 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
       {/* Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Drawer */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            ref={drawerRef}
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-xl z-50 lg:hidden"
-          >
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg leading-none" style={{fontFamily: 'serif'}}>Qg</span>
-                  </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    QuickGig
-                  </span>
-                </div>
-                <Button variant="ghost" size="icon" onClick={onClose}>
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-
-              {/* User Info */}
-              <div className="p-4 border-b border-gray-100">
-                <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
-                    <span className="text-white font-semibold text-lg">
-                      {user.name.charAt(0).toUpperCase()}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={onClose}
+            />
+            
+            {/* Drawer */}
+            <motion.div
+              ref={drawerRef}
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                duration: 0.3 
+              }}
+              className="fixed left-0 top-0 h-full w-80 bg-background border-r shadow-xl z-50"
+            >
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-8 w-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-lg leading-none" style={{fontFamily: 'serif'}}>Qg</span>
+                    </div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                      QuickGig
                     </span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-sm text-gray-600 capitalize">{user.role}</p>
+                  <Button variant="ghost" size="icon" onClick={onClose}>
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                {/* User Info */}
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
+                      <span className="text-white font-semibold text-lg">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{user.name}</p>
+                      <p className="text-sm text-gray-600 capitalize">{user.role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Navigation */}
-              <div className="flex-1 overflow-y-auto">
-                <nav className="p-4 space-y-2">
-                  <div className="mb-6">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                      Main Navigation
-                    </h3>
-                    {navigation.map((item, index) => {
-                      const isActive = location.pathname === item.href
-                      return (
+                {/* Navigation */}
+                <div className="flex-1 overflow-y-auto">
+                  <nav className="p-4 space-y-2">
+                    <div className="mb-6">
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                        Main Navigation
+                      </h3>
+                      {navigation.map((item, index) => {
+                        const isActive = location.pathname === item.href
+                        return (
+                          <motion.div
+                            key={item.name}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                          >
+                            <Link
+                              to={item.href}
+                              onClick={onClose}
+                              className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                                isActive
+                                  ? 'bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white shadow-lg'
+                                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              }`}
+                            >
+                              <item.icon className="h-5 w-5" />
+                              <span className="font-medium">{item.name}</span>
+                            </Link>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+
+                    <div>
+                      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                        More
+                      </h3>
+                      {additionalLinks.map((item, index) => (
                         <motion.div
                           key={item.name}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
+                          transition={{ delay: (navigation.length + index) * 0.1 }}
                         >
                           <Link
                             to={item.href}
                             onClick={onClose}
-                            className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${
-                              isActive
-                                ? 'bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white shadow-lg'
-                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            }`}
+                            className="flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
                           >
                             <item.icon className="h-5 w-5" />
                             <span className="font-medium">{item.name}</span>
                           </Link>
                         </motion.div>
-                      )
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                  </nav>
+                </div>
 
-                  <div>
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                      More
-                    </h3>
-                    {additionalLinks.map((item, index) => (
-                      <motion.div
-                        key={item.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (navigation.length + index) * 0.1 }}
-                      >
-                        <Link
-                          to={item.href}
-                          onClick={onClose}
-                          className="flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
-                        >
-                          <item.icon className="h-5 w-5" />
-                          <span className="font-medium">{item.name}</span>
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </div>
-                </nav>
-              </div>
-
-              {/* Footer */}
-              <div className="p-4 border-t border-gray-200">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      onLogout()
-                      onClose()
-                    }}
-                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                {/* Footer */}
+                <div className="p-4 border-t border-gray-200">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
                   >
-                    <LogOut className="h-5 w-5 mr-3" />
-                    Sign Out
-                  </Button>
-                </motion.div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        onLogout()
+                        onClose()
+                      }}
+                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <LogOut className="h-5 w-5 mr-3" />
+                      Sign Out
+                    </Button>
+                  </motion.div>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

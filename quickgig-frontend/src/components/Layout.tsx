@@ -1,10 +1,11 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { User } from '../types'
 import { Button } from './ui/button'
 import MobileNavbar from './MobileNavbar'
 import { NotificationDropdown } from './NotificationDropdown'
 import { SidebarDrawer } from './SidebarDrawer'
+import { getBackgroundBrightness, getAdaptiveColors } from '../lib/utils'
 import { 
   Home, 
   Briefcase, 
@@ -28,16 +29,47 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isDarkBackground, setIsDarkBackground] = useState(false)
+
+  // Check background brightness
+  useEffect(() => {
+    const checkBackground = () => {
+      const brightness = getBackgroundBrightness()
+      setIsDarkBackground(brightness === 'dark')
+    }
+
+    checkBackground()
+    
+    // Check on resize and scroll
+    window.addEventListener('resize', checkBackground)
+    window.addEventListener('scroll', checkBackground)
+    
+    return () => {
+      window.removeEventListener('resize', checkBackground)
+      window.removeEventListener('scroll', checkBackground)
+    }
+  }, [])
 
   const getIconColor = (itemName: string, isActive: boolean) => {
-    const colors = {
-      'Dashboard': isActive ? 'text-blue-300' : 'text-blue-400 group-hover:text-blue-300',
-      'Post Gig': isActive ? 'text-green-300' : 'text-green-400 group-hover:text-green-300',
-      'Applications': isActive ? 'text-purple-300' : 'text-purple-400 group-hover:text-purple-300',
-      'Payments': isActive ? 'text-yellow-300' : 'text-yellow-400 group-hover:text-yellow-300',
-      'Profile': isActive ? 'text-pink-300' : 'text-pink-400 group-hover:text-pink-300',
+    if (isDarkBackground) {
+      const darkColors = {
+        'Dashboard': isActive ? 'text-blue-300' : 'text-blue-400 group-hover:text-blue-300',
+        'Post Gig': isActive ? 'text-green-300' : 'text-green-400 group-hover:text-green-300',
+        'Applications': isActive ? 'text-purple-300' : 'text-purple-400 group-hover:text-purple-300',
+        'Payments': isActive ? 'text-yellow-300' : 'text-yellow-400 group-hover:text-yellow-300',
+        'Profile': isActive ? 'text-pink-300' : 'text-pink-400 group-hover:text-pink-300',
+      }
+      return darkColors[itemName as keyof typeof darkColors] || (isActive ? 'text-white' : 'text-gray-200 group-hover:text-white')
+    } else {
+      const lightColors = {
+        'Dashboard': isActive ? 'text-blue-600' : 'text-blue-500 group-hover:text-blue-600',
+        'Post Gig': isActive ? 'text-green-600' : 'text-green-500 group-hover:text-green-600',
+        'Applications': isActive ? 'text-purple-600' : 'text-purple-500 group-hover:text-purple-600',
+        'Payments': isActive ? 'text-yellow-600' : 'text-yellow-500 group-hover:text-yellow-600',
+        'Profile': isActive ? 'text-pink-600' : 'text-pink-500 group-hover:text-pink-600',
+      }
+      return lightColors[itemName as keyof typeof lightColors] || (isActive ? 'text-white' : 'text-white/90 group-hover:text-white')
     }
-    return colors[itemName as keyof typeof colors] || (isActive ? 'text-white' : 'text-white/80 group-hover:text-white')
   }
 
   const navigation = [
@@ -51,12 +83,14 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
     navigation.splice(1, 0, { name: 'Post Gig', href: '/post-gig', icon: Plus })
   }
 
+  const adaptiveColors = getAdaptiveColors(isDarkBackground)
+
   return (
     <div className="min-h-screen bg-transparent">
       {/* Mobile header */}
       <div className="lg:hidden">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h1 className="text-xl font-bold text-primary">QuickGig</h1>
+        <div className={`flex items-center justify-between p-4 border-b ${adaptiveColors.border.primary}`}>
+          <h1 className={`text-xl font-bold ${isDarkBackground ? 'text-white' : 'text-primary'}`}>QuickGig</h1>
           <div className="flex items-center space-x-2">
             <NotificationDropdown
               isOpen={isNotificationOpen}
@@ -83,7 +117,11 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => setIsExpanded(false)}
         >
-          <div className="flex flex-col flex-grow pt-5 bg-white/10 backdrop-blur-md border-r border-white/20 overflow-hidden">
+          <div className={`flex flex-col flex-grow pt-5 overflow-hidden ${
+            isDarkBackground 
+              ? 'border-r border-gray-600/30' 
+              : 'border-r border-white/20'
+          }`}>
             <div className="flex items-center flex-shrink-0 px-4">
               <div className="relative">
                 <div className="h-8 w-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -132,8 +170,12 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                       to={item.href}
                       className={`group relative flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-300 ease-out transform hover:scale-105 ${
                         isActive
-                          ? 'bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50 border border-white/20'
-                          : 'text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-blue-400/30 hover:via-purple-500/30 hover:to-pink-500/30 hover:shadow-lg hover:shadow-purple-400/30'
+                          ? isDarkBackground
+                            ? 'bg-gradient-to-r from-teal-500/30 via-cyan-600/30 to-blue-600/30 text-white shadow-lg shadow-teal-500/30 border border-white/20'
+                            : 'bg-gradient-to-r from-teal-400/20 via-cyan-500/20 to-blue-500/20 text-white shadow-lg shadow-teal-500/30 border border-white/20'
+                          : isDarkBackground
+                            ? 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-teal-500/20 hover:via-cyan-600/20 hover:to-blue-600/20 hover:shadow-lg hover:shadow-teal-400/20'
+                            : 'text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-teal-400/15 hover:via-cyan-500/15 hover:to-blue-500/15 hover:shadow-lg hover:shadow-teal-400/20'
                       }`}
                       title={!isExpanded ? item.name : undefined}
                     >
@@ -151,7 +193,11 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                       <span className={`ml-3 relative z-10 transition-all duration-300 font-medium ${
                         isExpanded ? 'opacity-100' : 'opacity-0'
                       } ${isExpanded ? 'block' : 'hidden'} ${
-                        isActive ? 'text-white drop-shadow-sm' : 'group-hover:text-white'
+                        isActive 
+                          ? 'text-white drop-shadow-sm' 
+                          : isDarkBackground 
+                            ? 'text-gray-200 group-hover:text-white'
+                            : 'text-white group-hover:text-white'
                       }`}>
                         {item.name}
                       </span>
@@ -159,8 +205,8 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                       {/* Animated border */}
                       <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-all duration-300 ${
                         isActive 
-                          ? 'bg-gradient-to-b from-blue-400 via-purple-500 to-pink-500 shadow-lg shadow-purple-400/50' 
-                          : 'bg-white/0 group-hover:bg-gradient-to-b group-hover:from-blue-400/80 group-hover:via-purple-500/80 group-hover:to-pink-500/80'
+                          ? 'bg-gradient-to-b from-teal-400 via-cyan-500 to-blue-500 shadow-lg shadow-teal-400/50' 
+                          : 'bg-white/0 group-hover:bg-gradient-to-b group-hover:from-teal-400/80 group-hover:via-cyan-500/80 group-hover:to-blue-500/80'
                       }`} />
                     </Link>
                   )
@@ -168,9 +214,9 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
               </nav>
               
               <div className="flex-shrink-0 px-2 pb-4">
-                <div className={`flex items-center p-2 rounded-md bg-white/10 transition-all duration-200 ${
-                  isExpanded ? 'justify-start' : 'justify-center'
-                }`}>
+                <div className={`flex items-center p-2 rounded-md transition-all duration-200 ${
+                  isDarkBackground ? 'bg-gray-700/50' : 'bg-white/10'
+                } ${isExpanded ? 'justify-start' : 'justify-center'}`}>
                   <div className="flex-shrink-0">
                     <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                       <span className="text-sm font-medium text-primary-foreground">
@@ -181,14 +227,14 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                   <div className={`ml-3 flex-1 min-w-0 transition-opacity duration-300 ${
                     isExpanded ? 'opacity-100' : 'opacity-0'
                   } ${isExpanded ? 'block' : 'hidden'}`}>
-                    <p className="text-sm font-medium truncate text-black">{user.name}</p>
-                    <p className="text-xs text-black/70 capitalize">{user.role}</p>
+                    <p className={`text-sm font-medium truncate ${adaptiveColors.text.primary}`}>{user.name}</p>
+                    <p className={`text-xs capitalize ${adaptiveColors.text.secondary}`}>{user.role}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={onLogout}
-                    className={`text-black hover:text-black/80 hover:bg-black/10 transition-all duration-200 flex items-center justify-center ${
+                    className={`${adaptiveColors.text.primary} hover:${adaptiveColors.text.primary} ${adaptiveColors.bg.hover} transition-all duration-200 flex items-center justify-center ${
                       isExpanded ? 'ml-2' : 'ml-0'
                     } ${isExpanded ? 'opacity-100' : 'opacity-0'} ${isExpanded ? 'block' : 'hidden'}`}
                     title={!isExpanded ? 'Logout' : undefined}

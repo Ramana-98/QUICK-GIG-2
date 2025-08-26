@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from './ui/button'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -46,18 +45,23 @@ export function ApplyButton({
             animate={showPulse ? { scale: [1, 1.05, 1] } : {}}
             transition={{ duration: 0.6, repeat: showPulse ? 2 : 0 }}
           >
-            <Button
+            <motion.button
               variant="outline"
               className={cn(
                 "bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300 hover:shadow-md transition-all duration-200",
                 showPulse && "shadow-lg shadow-green-200/50",
                 className
               )}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ 
+                scale: 0.95,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
             >
               <Check className="w-4 h-4 mr-2" />
               Applied
               <ChevronDown className="w-3 h-3 ml-2" />
-            </Button>
+            </motion.button>
           </motion.div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
@@ -78,15 +82,20 @@ export function ApplyButton({
   }
 
   return (
-    <Button
+    <motion.button
       onClick={onClick}
       disabled={state === 'applying'}
       className={cn(
+        "relative overflow-hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2",
+        state === 'error' ? 'border border-input bg-background hover:bg-accent hover:text-accent-foreground' : 'bg-primary text-primary-foreground hover:bg-primary/90',
         state === 'applying' && "opacity-70 cursor-not-allowed",
-        state === 'error' && "bg-red-50 border-red-200 text-red-700 hover:bg-red-100",
         className
       )}
-      variant={state === 'error' ? 'outline' : 'default'}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ 
+        scale: 0.95,
+        transition: { type: "spring", stiffness: 400, damping: 10 }
+      }}
     >
       <AnimatePresence mode="wait">
         {state === 'applying' ? (
@@ -111,6 +120,6 @@ export function ApplyButton({
           </motion.span>
         )}
       </AnimatePresence>
-    </Button>
+    </motion.button>
   )
 }

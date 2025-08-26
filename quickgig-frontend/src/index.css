@@ -102,66 +102,20 @@
   }
 }
 
-/* Dynamic Sparkles Animation */
-@keyframes sparkle {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  15% {
-    opacity: 1;
-    transform: scale(1) rotate(180deg);
-  }
-  30% {
-    opacity: 0.8;
-    transform: scale(1.2) rotate(270deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1) rotate(360deg);
-  }
-  70% {
-    opacity: 0.6;
-    transform: scale(0.8) rotate(450deg);
-  }
-  85% {
-    opacity: 0.3;
-    transform: scale(1.1) rotate(540deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0) rotate(720deg);
-  }
-}
-
-/* Animated Shiny Text Effect */
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) skewX(-12deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-12deg);
-  }
-}
-
-/* Secondary Shine Effect */
-@keyframes shine-reverse {
-  0% {
-    transform: translateX(200%) skewX(12deg);
-  }
-  100% {
-    transform: translateX(-100%) skewX(12deg);
-  }
-}
-
-/* Pulse Shine Effect */
-@keyframes shine-pulse {
+/* Animated Gradient Text Effect */
+@keyframes gradient-x {
   0%, 100% {
-    opacity: 0;
-    transform: scale(0.8);
+    background-size: 200% 200%;
+    background-position: left center;
   }
   50% {
-    opacity: 0.6;
-    transform: scale(1.2);
+    background-size: 200% 200%;
+    background-position: right center;
   }
+}
+
+/* Utility class for gradient text animation */
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
 }

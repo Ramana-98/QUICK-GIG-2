@@ -276,7 +276,13 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -313,7 +319,7 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
                   placeholder="Search gigs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-sans"
+                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary focus:shadow-lg focus:shadow-primary/20 transition-all duration-300 font-sans"
                 />
               </div>
             </div>
@@ -375,8 +381,14 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            whileHover={{ 
+              scale: 1.02, 
+              y: -4,
+              transition: { duration: 0.2, ease: "easeOut" }
+            }}
+            whileTap={{ scale: 0.98 }}
           >
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card className="hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-default">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -522,6 +534,6 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
         gigTitle={withdrawGig?.title || ''}
         isLoading={isWithdrawing}
       />
-    </div>
+    </motion.div>
   )
 }
