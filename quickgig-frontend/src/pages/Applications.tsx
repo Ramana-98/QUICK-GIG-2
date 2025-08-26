@@ -305,7 +305,7 @@ export default function Applications({ user }: ApplicationsProps) {
             transition={{ delay: 0.1 }}
           >
             <Card 
-              className={`cursor-pointer transition-colors ${
+              className={`cursor-pointer transition-colors bg-card/50 backdrop-blur-sm border-border/50 ${
                 activeTab === tab.id ? 'ring-2 ring-primary' : 'hover:bg-accent'
               }`}
               onClick={() => setActiveTab(tab.id)}
@@ -327,7 +327,7 @@ export default function Applications({ user }: ApplicationsProps) {
       {/* Applications List */}
       <div className="space-y-4">
         {tabFilteredApplications.length === 0 ? (
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="text-center py-12">
               <div className="text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-4" />
@@ -351,7 +351,7 @@ export default function Applications({ user }: ApplicationsProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="hover:shadow-md transition-shadow w-full">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:shadow-md transition-shadow w-full">
                 <CardContent className="p-4 sm:p-6">
                   {/* Mobile-First Layout */}
                   <div className="space-y-4">
@@ -362,7 +362,7 @@ export default function Applications({ user }: ApplicationsProps) {
                           {application.gigTitle}
                         </h3>
                       </div>
-                      <Badge className={`shrink-0 text-xs font-medium ${getStatusColor(application.status)}`}>
+                      <Badge className={`shrink-0 text-xs font-medium badge-shimmer-wiggle ${getStatusColor(application.status)}`}>
                         {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                       </Badge>
                     </div>

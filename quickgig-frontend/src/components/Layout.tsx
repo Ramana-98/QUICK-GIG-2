@@ -15,7 +15,9 @@ import {
   User as UserIcon, 
   Bell,
   LogOut,
-  Menu
+  Menu,
+  Settings,
+  HelpCircle
 } from 'lucide-react'
 
 interface LayoutProps {
@@ -58,6 +60,8 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
         'Applications': isActive ? 'text-purple-300' : 'text-purple-400 group-hover:text-purple-300',
         'Payments': isActive ? 'text-yellow-300' : 'text-yellow-400 group-hover:text-yellow-300',
         'Profile': isActive ? 'text-pink-300' : 'text-pink-400 group-hover:text-pink-300',
+        'Settings': isActive ? 'text-blue-300' : 'text-blue-400 group-hover:text-blue-300',
+        'Help & Support': isActive ? 'text-blue-300' : 'text-blue-400 group-hover:text-blue-300',
       }
       return darkColors[itemName as keyof typeof darkColors] || (isActive ? 'text-white' : 'text-gray-200 group-hover:text-white')
     } else {
@@ -67,6 +71,8 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
         'Applications': isActive ? 'text-purple-600' : 'text-purple-500 group-hover:text-purple-600',
         'Payments': isActive ? 'text-yellow-600' : 'text-yellow-500 group-hover:text-yellow-600',
         'Profile': isActive ? 'text-pink-600' : 'text-pink-500 group-hover:text-pink-600',
+        'Settings': isActive ? 'text-blue-600' : 'text-blue-500 group-hover:text-blue-600',
+        'Help & Support': isActive ? 'text-blue-600' : 'text-blue-500 group-hover:text-blue-600',
       }
       return lightColors[itemName as keyof typeof lightColors] || (isActive ? 'text-white' : 'text-white/90 group-hover:text-white')
     }
@@ -82,6 +88,11 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
   if (user.role === 'poster') {
     navigation.splice(1, 0, { name: 'Post Gig', href: '/post-gig', icon: Plus })
   }
+
+  const additionalNavigation = [
+    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Help & Support', href: '/help', icon: HelpCircle },
+  ]
 
   const adaptiveColors = getAdaptiveColors(isDarkBackground)
 
@@ -211,6 +222,59 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
                     </Link>
                   )
                 })}
+                
+                {/* Additional Navigation Items */}
+                <div className="pt-4 mt-4 border-t border-white/10">
+                  {additionalNavigation.map((item) => {
+                    const isActive = location.pathname === item.href
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className={`group relative flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-300 ease-out transform hover:scale-105 ${
+                          isActive
+                            ? isDarkBackground
+                              ? 'bg-gradient-to-r from-teal-500/30 via-cyan-600/30 to-blue-600/30 text-white shadow-lg shadow-teal-500/30 border border-white/20'
+                              : 'bg-gradient-to-r from-teal-400/20 via-cyan-500/20 to-blue-500/20 text-white shadow-lg shadow-teal-500/30 border border-white/20'
+                            : isDarkBackground
+                              ? 'text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-teal-500/20 hover:via-cyan-600/20 hover:to-blue-600/20 hover:shadow-lg hover:shadow-teal-400/20'
+                              : 'text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-teal-400/15 hover:via-cyan-500/15 hover:to-blue-500/15 hover:shadow-lg hover:shadow-teal-400/20'
+                        }`}
+                        title={!isExpanded ? item.name : undefined}
+                      >
+                        {/* Animated glow effect */}
+                        <div className={`absolute inset-0 rounded-md transition-all duration-300 ease-out ${
+                          isActive
+                            ? 'shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                            : 'shadow-[0_0_0px_rgba(255,255,255,0)] group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                        }`} />
+                        
+                        <item.icon className={`h-5 w-5 flex-shrink-0 relative z-10 transition-all duration-300 drop-shadow-sm ${
+                          getIconColor(item.name, isActive)
+                        }`} />
+                        
+                        <span className={`ml-3 relative z-10 transition-all duration-300 font-medium ${
+                          isExpanded ? 'opacity-100' : 'opacity-0'
+                        } ${isExpanded ? 'block' : 'hidden'} ${
+                          isActive 
+                            ? 'text-white drop-shadow-sm' 
+                            : isDarkBackground 
+                              ? 'text-gray-200 group-hover:text-white'
+                              : 'text-white group-hover:text-white'
+                        }`}>
+                          {item.name}
+                        </span>
+                        
+                        {/* Animated border */}
+                        <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-all duration-300 ${
+                          isActive 
+                            ? 'bg-gradient-to-b from-teal-400 via-cyan-500 to-blue-500 shadow-lg shadow-teal-400/50' 
+                            : 'bg-white/0 group-hover:bg-gradient-to-b group-hover:from-teal-400/80 group-hover:via-cyan-500/80 group-hover:to-blue-500/80'
+                        }`} />
+                      </Link>
+                    )
+                  })}
+                </div>
               </nav>
               
               <div className="flex-shrink-0 px-2 pb-4">
@@ -262,7 +326,7 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
       </div>
 
       {/* Mobile Navigation with Scroll Behavior */}
-      <MobileNavbar user={user} />
+      {!isSidebarOpen && <MobileNavbar user={user} />}
     </div>
   )
 }

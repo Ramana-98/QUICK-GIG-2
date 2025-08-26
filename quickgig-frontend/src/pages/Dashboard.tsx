@@ -21,12 +21,30 @@ import {
   Search,
   Plus,
   Briefcase,
-  X
+  X,
+  Tag,
+  FileText,
+  Eye,
+  DollarSign
 } from 'lucide-react'
+import { Badge } from '../components/ui/badge'
 
 interface DashboardProps {
   user: User | null
   onLoginRequired?: () => void
+}
+
+interface PostGigFormData {
+  title: string
+  description: string
+  category: string
+  pay: string
+  payType: 'hourly' | 'fixed'
+  duration: string
+  location: string
+  startDate: string
+  endDate: string
+  tags: string
 }
 
 // Mock data
@@ -87,7 +105,6 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [activeTab, setActiveTab] = useState('all')
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
-  const [isPostGigModalOpen, setIsPostGigModalOpen] = useState(false)
   const [appliedGigs, setAppliedGigs] = useState<Set<string>>(new Set())
   const [applyingGigs, setApplyingGigs] = useState<Set<string>>(new Set())
   const [selectedGig, setSelectedGig] = useState<Gig | null>(null)
@@ -105,12 +122,67 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
     minRating: 0
   })
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(filters)
+  const [isPostGigModalOpen, setIsPostGigModalOpen] = useState(false)
+  const [showPostGigForm, setShowPostGigForm] = useState(false)
+  const [postGigFormData, setPostGigFormData] = useState<PostGigFormData>({
+    title: '',
+    description: '',
+    category: '',
+    pay: '',
+    payType: 'hourly',
+    duration: '',
+    location: '',
+    startDate: '',
+    endDate: '',
+    tags: ''
+  })
+  const [showPreview, setShowPreview] = useState(false)
   const { toast } = useToast()
 
   const categories = ['all', 'Pet Care', 'Shopping', 'Photography', 'Cleaning', 'Delivery', 'Tutoring']
+  const postGigCategories = [
+    'Pet Care', 'Cleaning', 'Delivery', 'Photography', 'Tutoring',
+    'Shopping', 'Gardening', 'Tech Support', 'Moving', 'Other'
+  ]
   const tabs = user?.role === 'seeker' 
     ? ['all', 'applied', 'completed'] 
     : ['all', 'active', 'completed']
+
+  const handlePostGigInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setPostGigFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const handlePostGigSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Mock submission - in real app, this would call an API
+    console.log('Gig posted:', postGigFormData)
+    
+    // Reset form
+    setPostGigFormData({
+      title: '',
+      description: '',
+      category: '',
+      pay: '',
+      payType: 'hourly',
+      duration: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      tags: ''
+    })
+    
+    setShowPostGigForm(false)
+    toast({
+      title: "Gig Posted Successfully!",
+      description: "Your gig has been posted and is now visible to job seekers.",
+    })
+  }
+
+  const isPostGigFormValid = postGigFormData.title && postGigFormData.description && postGigFormData.category && 
+                             postGigFormData.pay && postGigFormData.location && postGigFormData.startDate
 
   // Check if any filters are active
   const hasActiveFilters = () => {
@@ -298,17 +370,19 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
           </p>
         </div>
         
-        <AnimatedPostGigButton
-          onClick={() => setIsPostGigModalOpen(true)}
-          className="mt-4 sm:mt-0"
-        >
-          {user?.role === 'poster' ? 'Post New Gig' : 'Post a Gig'}
-        </AnimatedPostGigButton>
+        {user?.role === 'poster' && (
+          <AnimatedPostGigButton
+            onClick={() => setIsPostGigModalOpen(true)}
+            className="mt-4 sm:mt-0"
+          >
+            Post New Gig
+          </AnimatedPostGigButton>
+        )}
       </div>
 
 
       {/* Search and Filters */}
-      <Card>
+      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -388,7 +462,7 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
             }}
             whileTap={{ scale: 0.98 }}
           >
-            <Card className="hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-default">
+            <Card className="hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 cursor-default bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -397,9 +471,9 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
                       {gig.description}
                     </CardDescription>
                   </div>
-                  <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-sans">
+                  <Badge variant="secondary" className="text-xs bg-primary/10 text-primary badge-shimmer-wiggle">
                     {gig.category}
-                  </span>
+                  </Badge>
                 </div>
               </CardHeader>
               
@@ -479,9 +553,11 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
         isOpen={isPostGigModalOpen}
         onClose={() => setIsPostGigModalOpen(false)}
         onSuccess={() => {
+          console.log('New gig posted successfully')
+          setIsPostGigModalOpen(false)
           toast({
-            title: "Gig posted successfully!",
-            description: "Your gig is now live and visible to job seekers.",
+            title: "Gig Posted Successfully!",
+            description: "Your gig has been posted and is now live.",
           })
         }}
       />

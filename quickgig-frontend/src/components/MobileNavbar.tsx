@@ -122,7 +122,7 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
             damping: 30,
             duration: 0.3 
           }}
-          className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
+          className="lg:hidden fixed bottom-0 w-full z-50"
         >
           <div className="mx-4 mb-4">
             <div className={`${
@@ -130,7 +130,7 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
                 ? 'bg-gray-800/95 border-gray-600/50' 
                 : 'bg-white/95 border-gray-200/50'
             } backdrop-blur-md rounded-2xl shadow-lg shadow-black/10`}>
-              <nav className="flex justify-around py-3 px-2">
+              <nav className="flex justify-around items-center py-3 px-2">
                 {navigation.slice(0, 5).map((item, index) => {
                   const isActive = location.pathname === item.href
                   return (
@@ -153,7 +153,7 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
                         }`}
                       >
                         <div className="relative">
-                          <item.icon className={`h-5 w-5 transition-all duration-200 ${
+                          <item.icon className={`h-5 w-5 sm:h-6 sm:w-6 transition-all duration-200 ${
                             isActive 
                               ? isDarkBackground ? 'text-teal-300' : 'text-teal-700'
                               : ''
@@ -173,7 +173,7 @@ export default function MobileNavbar({ user }: MobileNavbarProps) {
                           )}
                         </div>
                         
-                        <span className={`text-xs mt-1 font-medium transition-all duration-200 ${
+                        <span className={`text-xs sm:text-sm mt-1 font-medium transition-all duration-200 hidden sm:block ${
                           isActive 
                             ? isDarkBackground ? 'text-teal-300' : 'text-teal-700'
                             : ''

@@ -8,6 +8,7 @@ import PostGig from './pages/PostGig'
 import Applications from './pages/Applications'
 import Payments from './pages/Payments'
 import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import Layout from './components/Layout'
 import { Toaster } from './components/ui/toaster'
 
@@ -56,6 +57,7 @@ function App() {
               <Route path="/applications" element={<Applications user={user} />} />
               <Route path="/payments" element={<Payments user={user} />} />
               <Route path="/profile" element={<Profile user={user} onUpdate={setUser} />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>

@@ -220,7 +220,7 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Info */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Profile Information</CardTitle>
@@ -352,7 +352,7 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
           </Card>
 
           {/* Reviews & Ratings */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Reviews & Ratings</CardTitle>
               <CardDescription>What others say about working with you</CardDescription>
@@ -393,7 +393,7 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Stats */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Profile Stats</CardTitle>
             </CardHeader>
@@ -433,7 +433,7 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
           </Card>
 
           {/* Achievements */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Achievements</CardTitle>
               <CardDescription>Your milestones and badges</CardDescription>
@@ -472,7 +472,7 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
           </Card>
 
           {/* Quick Actions */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
               <CardDescription>Manage your profile and get help</CardDescription>

@@ -82,7 +82,7 @@ export default function PostGig({ user }: PostGigProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Gig Details</CardTitle>
               <CardDescription>
@@ -286,7 +286,7 @@ export default function PostGig({ user }: PostGigProps) {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Tips */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Posting Tips</CardTitle>
             </CardHeader>
@@ -329,7 +329,7 @@ export default function PostGig({ user }: PostGigProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card>
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                 <CardHeader>
                   <CardTitle>Preview</CardTitle>
                   <CardDescription>How your gig will appear to job seekers</CardDescription>

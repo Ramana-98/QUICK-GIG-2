@@ -166,7 +166,7 @@ export default function Payments({ user }: PaymentsProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {user.role === 'seeker' ? 'Total Earned' : 'Total Spent'}
@@ -193,7 +193,7 @@ export default function Payments({ user }: PaymentsProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
               <Calendar className="h-4 w-4 text-orange-500" />
@@ -218,7 +218,7 @@ export default function Payments({ user }: PaymentsProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">This Month</CardTitle>
               <TrendingUp className="h-4 w-4 text-green-500" />
@@ -243,7 +243,7 @@ export default function Payments({ user }: PaymentsProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
               <IndianRupee className="h-4 w-4 text-purple-500" />
@@ -287,7 +287,7 @@ export default function Payments({ user }: PaymentsProps) {
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Quick Actions */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle className="font-poppins font-semibold">Quick Actions</CardTitle>
               <CardDescription className="font-sans">Manage your payments and wallet</CardDescription>
@@ -317,7 +317,7 @@ export default function Payments({ user }: PaymentsProps) {
           </Card>
 
           {/* Recent Activity */}
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
               <CardDescription>Your latest transactions</CardDescription>
@@ -362,7 +362,7 @@ export default function Payments({ user }: PaymentsProps) {
       )}
 
       {activeTab === 'transactions' && (
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader>
             <CardTitle>All Transactions</CardTitle>
             <CardDescription>Complete history of your payments</CardDescription>
@@ -409,7 +409,7 @@ export default function Payments({ user }: PaymentsProps) {
 
       {activeTab === 'analytics' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Earnings Trend</CardTitle>
               <CardDescription>Your monthly earnings over time</CardDescription>
@@ -456,7 +456,7 @@ export default function Payments({ user }: PaymentsProps) {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle>Payment Breakdown</CardTitle>
               <CardDescription>Analysis of your payment patterns</CardDescription>

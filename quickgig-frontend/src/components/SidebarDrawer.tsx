@@ -98,11 +98,11 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                 damping: 30,
                 duration: 0.3 
               }}
-              className="fixed left-0 top-0 h-full w-80 bg-background border-r shadow-xl z-50"
+              className="fixed left-0 top-0 h-full w-80 bg-background border-r shadow-xl z-50 max-h-screen"
             >
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full max-h-screen">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
                   <div className="flex items-center space-x-3">
                     <div className="h-8 w-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-lg leading-none" style={{fontFamily: 'serif'}}>Qg</span>
@@ -117,7 +117,7 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                 </div>
 
                 {/* User Info */}
-                <div className="p-4 border-b border-gray-100">
+                <div className="p-4 border-b border-gray-100 flex-shrink-0">
                   <div className="flex items-center space-x-3">
                     <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
                       <span className="text-white font-semibold text-lg">
@@ -132,9 +132,9 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                 </div>
 
                 {/* Navigation */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto min-h-0">
                   <nav className="p-4 space-y-2">
-                    <div className="mb-6">
+                    <div className="mb-4">
                       <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                         Main Navigation
                       </h3>
@@ -150,7 +150,7 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                             <Link
                               to={item.href}
                               onClick={onClose}
-                              className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                              className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                                 isActive
                                   ? 'bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-white shadow-lg'
                                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -178,7 +178,7 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                           <Link
                             to={item.href}
                             onClick={onClose}
-                            className="flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
+                            className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200"
                           >
                             <item.icon className="h-5 w-5" />
                             <span className="font-medium">{item.name}</span>
@@ -189,8 +189,8 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                   </nav>
                 </div>
 
-                {/* Footer */}
-                <div className="p-4 border-t border-gray-200">
+                {/* Footer - Always visible */}
+                <div className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -202,7 +202,7 @@ export function SidebarDrawer({ isOpen, onClose, onToggle, user, onLogout }: Sid
                         onLogout()
                         onClose()
                       }}
-                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 font-medium py-3 px-3 rounded-lg border border-red-200 hover:border-red-300 transition-all duration-200"
                     >
                       <LogOut className="h-5 w-5 mr-3" />
                       Sign Out

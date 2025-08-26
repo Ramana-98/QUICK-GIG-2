@@ -6,6 +6,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from './ui/dropdown-menu'
+import { Button } from './ui/button'
 import { Check, Loader2, Eye, X, ChevronDown } from 'lucide-react'
 import { cn } from '../lib/utils'
 
@@ -18,6 +19,8 @@ interface ApplyButtonProps {
   onWithdrawApplication?: () => void
   className?: string
 }
+
+const MotionButton = motion(Button)
 
 export function ApplyButton({ 
   state, 
@@ -45,7 +48,7 @@ export function ApplyButton({
             animate={showPulse ? { scale: [1, 1.05, 1] } : {}}
             transition={{ duration: 0.6, repeat: showPulse ? 2 : 0 }}
           >
-            <motion.button
+            <MotionButton
               variant="outline"
               className={cn(
                 "bg-green-50 border-green-200 text-green-700 hover:bg-green-100 hover:border-green-300 hover:shadow-md transition-all duration-200",
@@ -61,7 +64,7 @@ export function ApplyButton({
               <Check className="w-4 h-4 mr-2" />
               Applied
               <ChevronDown className="w-3 h-3 ml-2" />
-            </motion.button>
+            </MotionButton>
           </motion.div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
@@ -82,7 +85,7 @@ export function ApplyButton({
   }
 
   return (
-    <motion.button
+    <MotionButton
       onClick={onClick}
       disabled={state === 'applying'}
       className={cn(
@@ -120,6 +123,6 @@ export function ApplyButton({
           </motion.span>
         )}
       </AnimatePresence>
-    </motion.button>
+    </MotionButton>
   )
 }
