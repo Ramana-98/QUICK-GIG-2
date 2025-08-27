@@ -16,6 +16,7 @@ import { Toaster } from './components/ui/toaster'
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false)
 
   useEffect(() => {
     // Check for stored user session
@@ -50,9 +51,9 @@ function App() {
         {!user ? (
           <AuthPage onLogin={handleLogin} />
         ) : (
-          <Layout user={user} onLogout={handleLogout}>
+          <Layout user={user} onLogout={handleLogout} isFilterPanelOpen={isFilterPanelOpen}>
             <Routes>
-              <Route path="/" element={<Dashboard user={user} />} />
+              <Route path="/" element={<Dashboard user={user} onFilterPanelChange={setIsFilterPanelOpen} />} />
               <Route path="/gig/:id" element={<GigDetails user={user} />} />
               <Route path="/post-gig" element={<PostGig user={user} />} />
               <Route path="/applications" element={<Applications user={user} />} />

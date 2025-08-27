@@ -24,9 +24,10 @@ interface LayoutProps {
   children: ReactNode
   user: User
   onLogout: () => void
+  isFilterPanelOpen?: boolean
 }
 
-export default function Layout({ children, user, onLogout }: LayoutProps) {
+export default function Layout({ children, user, onLogout, isFilterPanelOpen }: LayoutProps) {
   const location = useLocation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
@@ -338,7 +339,7 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
       </div>
 
       {/* Mobile Navigation with Scroll Behavior */}
-      {!isSidebarOpen && <MobileNavbar user={user} />}
+      {!isSidebarOpen && !isFilterPanelOpen && <MobileNavbar user={user} />}
     </div>
   )
 }

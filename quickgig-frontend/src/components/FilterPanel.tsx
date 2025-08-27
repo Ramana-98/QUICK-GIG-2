@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
@@ -16,7 +16,7 @@ export interface FilterState {
 
 interface FilterPanelProps {
   isOpen: boolean
-  onClose: () => void
+  onClose: (filters: FilterState) => void
   filters: FilterState
   onFiltersChange: (filters: FilterState) => void
   onApplyFilters: () => void
@@ -38,6 +38,14 @@ export default function FilterPanel({
 }: FilterPanelProps) {
   const [localFilters, setLocalFilters] = useState<FilterState>(filters)
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+  }, [isOpen])
+
   const updateFilter = (key: keyof FilterState, value: string | number) => {
     setLocalFilters(prev => ({ ...prev, [key]: value }))
   }
@@ -45,7 +53,7 @@ export default function FilterPanel({
   const handleApply = () => {
     onFiltersChange(localFilters)
     onApplyFilters()
-    onClose()
+    onClose(localFilters)
   }
 
   const handleClear = () => {
@@ -63,6 +71,10 @@ export default function FilterPanel({
     onClearFilters()
   }
 
+  const handleBackdropClick = () => {
+    onClose(localFilters)
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -73,7 +85,7 @@ export default function FilterPanel({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 z-40"
-            onClick={onClose}
+            onClick={handleBackdropClick}
           />
           
           {/* Filter Panel */}
@@ -88,7 +100,7 @@ export default function FilterPanel({
               <CardHeader className="border-b">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Filter Gigs</CardTitle>
-                  <Button variant="ghost" size="icon" onClick={onClose}>
+                  <Button variant="ghost" size="icon" onClick={() => onClose(localFilters)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </div>

@@ -32,6 +32,7 @@ import { Badge } from '../components/ui/badge'
 interface DashboardProps {
   user: User | null
   onLoginRequired?: () => void
+  onFilterPanelChange?: (isOpen: boolean) => void
 }
 
 interface PostGigFormData {
@@ -99,7 +100,7 @@ const mockGigs: Gig[] = [
   }
 ]
 
-export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
+export default function Dashboard({ user, onLoginRequired, onFilterPanelChange }: DashboardProps) {
   const [gigs, setGigs] = useState<Gig[]>(mockGigs)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -414,7 +415,10 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
               <Button 
                 variant="outline" 
                 size="icon"
-                onClick={() => setIsFilterPanelOpen(true)}
+                onClick={() => {
+                  setIsFilterPanelOpen(true)
+                  onFilterPanelChange?.(true)
+                }}
                 className={`filter-glassmorphism transition-all duration-300 ${
                   hasActiveFilters() 
                     ? 'bg-primary text-primary-foreground border-primary shadow-lg' 
@@ -541,7 +545,10 @@ export default function Dashboard({ user, onLoginRequired }: DashboardProps) {
       {/* Filter Panel */}
       <FilterPanel
         isOpen={isFilterPanelOpen}
-        onClose={() => setIsFilterPanelOpen(false)}
+        onClose={() => {
+          setIsFilterPanelOpen(false)
+          onFilterPanelChange?.(false)
+        }}
         filters={filters}
         onFiltersChange={setFilters}
         onApplyFilters={handleApplyFilters}
