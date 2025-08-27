@@ -376,6 +376,18 @@
   box-shadow: 0 0 10px rgba(147, 51, 234, 0.8), 0 0 20px rgba(147, 51, 234, 0.4);
 }
 
+/* Sparkle Animation for Text Effects */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Glassmorphism Filter Button Effect */
 .filter-glassmorphism {
   background: rgba(255, 255, 255, 0.1);

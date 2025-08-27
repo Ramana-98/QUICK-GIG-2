@@ -101,7 +101,19 @@ export default function Layout({ children, user, onLogout }: LayoutProps) {
       {/* Mobile header */}
       <div className="lg:hidden">
         <div className={`flex items-center justify-between p-4 border-b ${adaptiveColors.border.primary}`}>
-          <h1 className={`text-xl font-bold ${isDarkBackground ? 'text-white' : 'text-primary'}`}>QuickGig</h1>
+          <div className="relative">
+            <h1 className={`text-xl font-bold ${isDarkBackground ? 'text-white' : 'text-primary'} bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent`}>
+              QuickGig
+            </h1>
+            {/* Mobile Sparkles */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 left-2 text-yellow-300 opacity-0 animate-[sparkle_2s_ease-in-out_infinite]" style={{fontSize: '6px', animationDelay: '0s'}}>✦</div>
+              <div className="absolute top-1 right-4 text-blue-300 opacity-0 animate-[sparkle_2.5s_ease-in-out_infinite]" style={{fontSize: '5px', animationDelay: '0.3s'}}>✨</div>
+              <div className="absolute bottom-1 left-8 text-pink-300 opacity-0 animate-[sparkle_3s_ease-in-out_infinite]" style={{fontSize: '7px', animationDelay: '0.6s'}}>⭐</div>
+              <div className="absolute top-2 left-12 text-purple-300 opacity-0 animate-[sparkle_2.8s_ease-in-out_infinite]" style={{fontSize: '5px', animationDelay: '1s'}}>✦</div>
+              <div className="absolute bottom-0 right-2 text-cyan-300 opacity-0 animate-[sparkle_2.2s_ease-in-out_infinite]" style={{fontSize: '6px', animationDelay: '1.3s'}}>✨</div>
+            </div>
+          </div>
           <div className="flex items-center space-x-2">
             <NotificationDropdown
               isOpen={isNotificationOpen}

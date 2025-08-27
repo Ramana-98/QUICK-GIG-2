@@ -59,7 +59,25 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
           >
             <Briefcase className="w-8 h-8 text-primary-foreground" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gray-900">QuickGig</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="relative"
+          >
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              QuickGig
+            </h1>
+            {/* Auth Page Sparkles */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 left-4 text-yellow-300 opacity-0 animate-[sparkle_2s_ease-in-out_infinite]" style={{fontSize: '8px', animationDelay: '0s'}}>✦</div>
+              <div className="absolute top-2 right-6 text-blue-300 opacity-0 animate-[sparkle_2.5s_ease-in-out_infinite]" style={{fontSize: '6px', animationDelay: '0.3s'}}>✨</div>
+              <div className="absolute bottom-1 left-12 text-pink-300 opacity-0 animate-[sparkle_3s_ease-in-out_infinite]" style={{fontSize: '10px', animationDelay: '0.6s'}}>⭐</div>
+              <div className="absolute top-3 left-16 text-purple-300 opacity-0 animate-[sparkle_2.8s_ease-in-out_infinite]" style={{fontSize: '7px', animationDelay: '1s'}}>✦</div>
+              <div className="absolute bottom-0 right-2 text-cyan-300 opacity-0 animate-[sparkle_2.2s_ease-in-out_infinite]" style={{fontSize: '9px', animationDelay: '1.3s'}}>✨</div>
+              <div className="absolute top-4 right-12 text-yellow-400 opacity-0 animate-[sparkle_3.2s_ease-in-out_infinite]" style={{fontSize: '6px', animationDelay: '1.6s'}}>⭐</div>
+            </div>
+          </motion.div>
           <p className="text-gray-600 mt-2">Your hyperlocal gig platform</p>
         </div>
 
