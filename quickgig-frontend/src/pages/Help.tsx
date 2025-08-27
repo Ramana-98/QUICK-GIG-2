@@ -151,30 +151,71 @@ export default function Help() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* FAQ Section */}
           <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm border-border/50">
-              <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm border-border/50 h-[458px] flex flex-col">
+              <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 flex-shrink-0">
                 <CardTitle className="flex items-center gap-2">
                   <HelpCircle className="h-5 w-5 text-blue-500" />
                   Frequently Asked Questions
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  {faqData.map((faq) => (
-                    <div 
+              <CardContent className="p-6 flex-1 overflow-hidden">
+                <motion.div 
+                  className="space-y-3 h-full overflow-y-auto pr-2 hide-scrollbar"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.15,
+                        delayChildren: 0.2
+                      }
+                    }
+                  }}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  {faqData.map((faq, index) => (
+                    <motion.div 
                       key={faq.id}
                       className="border border-border/50 rounded-lg overflow-hidden hover:bg-accent/50 transition-colors"
+                      variants={{
+                        hidden: { 
+                          opacity: 0, 
+                          y: 20,
+                          scale: 0.95
+                        },
+                        visible: { 
+                          opacity: 1, 
+                          y: 0,
+                          scale: 1,
+                          transition: {
+                            type: "spring",
+                            stiffness: 100,
+                            damping: 15,
+                            duration: 0.6
+                          }
+                        }
+                      }}
+                      whileHover={{
+                        scale: 1.02,
+                        transition: { duration: 0.2 }
+                      }}
                     >
                       <button
                         onClick={() => toggleFAQ(faq.id)}
                         className="w-full px-4 py-4 text-left flex items-center justify-between font-medium hover:bg-accent/50 transition-colors"
                       >
                         <span>{faq.question}</span>
-                        {faq.isOpen ? (
-                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                        )}
+                        <motion.div
+                          animate={{ rotate: faq.isOpen ? 180 : 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >
+                          {faq.isOpen ? (
+                            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </motion.div>
                       </button>
                       <motion.div
                         initial={false}
@@ -182,13 +223,18 @@ export default function Help() {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-4 pb-4 text-muted-foreground">
+                        <motion.div 
+                          className="px-4 pb-4 text-muted-foreground"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: faq.isOpen ? 1 : 0 }}
+                          transition={{ duration: 0.2, delay: faq.isOpen ? 0.1 : 0 }}
+                        >
                           {faq.answer}
-                        </div>
+                        </motion.div>
                       </motion.div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </CardContent>
             </Card>
           </motion.div>
